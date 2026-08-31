@@ -1,10 +1,11 @@
 import pygame 
+import principal
 pygame.init() 
  
 ancho = 800 
 alto = 600 
 ventana = pygame.display.set_mode((ancho, alto)) 
-pygame.display.set_caption("Juego") 
+pygame.display.set_caption("PAU") 
 ejecutando = True 
 reloj = pygame.time.Clock() 
 y = 225 
@@ -128,6 +129,7 @@ while ejecutando:
             (25, 55), 
             5
         )
+        principal.principal()
  
     pygame.display.flip() 
     reloj.tick(60) 
