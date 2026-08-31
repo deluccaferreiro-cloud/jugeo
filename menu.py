@@ -20,6 +20,20 @@ cuadro2 = pygame.Rect(x, 300, 200, 50)
 cuadro3 = pygame.Rect(x, 375, 200, 50) 
 
 fondo = pygame.image.load("PAU.png")
+
+pou = pygame.image.load("pou.png")
+
+tamaño_maximo = 400
+ancho_pou, alto_pou = pou.get_size()
+
+escala = min(tamaño_maximo / ancho_pou, tamaño_maximo / alto_pou)
+
+nuevo_ancho = int(ancho_pou * escala)
+nuevo_alto = int(alto_pou * escala)
+
+pou = pygame.transform.smoothscale(pou, (nuevo_ancho, nuevo_alto))
+
+cruz = pygame.Rect(20, 20, 40, 40)
  
 while ejecutando: 
      
@@ -41,11 +55,11 @@ while ejecutando:
                         ejecutando = False 
  
                 elif pantalla_actual == "instrucciones": 
-                    if cuadro3.collidepoint(evento.pos): 
+                    if cruz.collidepoint(evento.pos): 
                         pantalla_actual = "menu" 
  
                 elif pantalla_actual == "juego": 
-                    if cuadro3.collidepoint(evento.pos): 
+                    if cruz.collidepoint(evento.pos): 
                         pantalla_actual = "menu" 
  
     if pantalla_actual == "menu": 
@@ -77,19 +91,43 @@ while ejecutando:
         ventana.blit(texto_instrucc, (250, 200)) 
         ventana.blit(texto_instrucc2, (250, 250)) 
  
-        pygame.draw.rect(ventana, (255, 255, 255), cuadro3) 
-        superficietexto3 = fuente.render("VOLVER", True, (212, 232, 244)) 
-        ventana.blit(superficietexto3, (x + 60, 375 + 14)) 
+        pygame.draw.line(
+            ventana, 
+            (255, 255, 255), 
+            (25, 25), 
+            (55, 55), 
+            5
+        )
+
+        pygame.draw.line(
+            ventana, 
+            (255, 255, 255), 
+            (55, 25), 
+            (25, 55), 
+            5
+        )
  
     elif pantalla_actual == "juego": 
         ventana.fill((50, 150, 50)) 
  
-        texto_juego = fuente.render("JUGANDO...", True, (255, 255, 255)) 
-        ventana.blit(texto_juego, (330, 200)) 
- 
-        pygame.draw.rect(ventana, (255, 255, 255), cuadro3) 
-        superficietexto3 = fuente.render("VOLVER", True, (212, 232, 244)) 
-        ventana.blit(superficietexto3, (x + 60, 375 + 14)) 
+        posicion_pou = pou.get_rect(center=(ancho // 2, alto // 2))
+        ventana.blit(pou, posicion_pou)
+
+        pygame.draw.line(
+            ventana, 
+            (255, 255, 255), 
+            (25, 25), 
+            (55, 55), 
+            5
+        )
+
+        pygame.draw.line(
+            ventana, 
+            (255, 255, 255), 
+            (55, 25), 
+            (25, 55), 
+            5
+        )
  
     pygame.display.flip() 
     reloj.tick(60) 
