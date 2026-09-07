@@ -8,7 +8,7 @@ TIEMPO_DISMINUCION = 500
 
 DURACION_NOCHE = 3000
 
-bano = 100
+baño = 100
 comer = 100
 dormir = 100
 jugar = 100
