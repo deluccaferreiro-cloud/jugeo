@@ -39,7 +39,7 @@ cuadro3 = pygame.Rect(x, 375, 200, 50)
 # -----------------------------
 # Todas las imágenes se buscan dentro de "imagenes"
 
-fondo = pygame.image.load("imagenes/PAU.png")
+fondo = pygame.image.load("PAU.png")
 
 # La imagen del Pou del menú ya no se dibuja
 # porque principal.py se encarga del personaje

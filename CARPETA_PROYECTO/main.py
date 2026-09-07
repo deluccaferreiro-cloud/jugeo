@@ -5,9 +5,6 @@ import json
 import random
 import sys
 
-# =========================================================
-# CONFIGURACIÓN
-# =========================================================
 
 ANCHO = 800
 ALTO = 600
@@ -20,19 +17,12 @@ pygame.display.set_caption("Pou MVP")
 
 RELOJ = pygame.time.Clock()
 
-# =========================================================
-# RUTAS DE LAS IMÁGENES
-# =========================================================
-
 CARPETA_PROYECTO = os.path.dirname(os.path.abspath(__file__))
 CARPETA_ASSETS = os.path.join(CARPETA_PROYECTO, "assets")
 
 RUTA_POU = os.path.join(CARPETA_ASSETS, "pau.png")
 RUTA_POU_FELIZ = os.path.join(CARPETA_ASSETS, "paufeliz.png")
 
-# =========================================================
-# CARGAR IMÁGENES
-# =========================================================
 
 def cargar_imagen(ruta, nombre):
     if not os.path.exists(ruta):
@@ -65,18 +55,10 @@ POU_NORMAL = cargar_imagen(RUTA_POU, "pau.png")
 POU_FELIZ = cargar_imagen(RUTA_POU_FELIZ, "paufeliz.png")
 
 
-# =========================================================
-# FUENTES
-# =========================================================
-
 FUENTE = pygame.font.SysFont("Arial", 20, bold=True)
 FUENTE_GRANDE = pygame.font.SysFont("Arial", 28, bold=True)
 FUENTE_PEQUENA = pygame.font.SysFont("Arial", 16)
 
-
-# =========================================================
-# FUNCIONES AUXILIARES
-# =========================================================
 
 def limitar(valor, minimo=0, maximo=100):
     return max(minimo, min(maximo, valor))
