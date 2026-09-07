@@ -2,118 +2,72 @@ import pygame
 
 pygame.init()
 
+import principal
+
 ancho = 800
 alto = 600
 
 ventana = pygame.display.set_mode((ancho, alto))
 pygame.display.set_caption("PAU")
 
-# Importamos principal después de pygame.init()
-import principal
-
 ejecutando = True
 reloj = pygame.time.Clock()
-
-# -----------------------------
-# CONFIGURACIÓN DEL MENÚ
-# -----------------------------
-
-x = 300
-velocidad = 5
-
-texto1 = "JUGAR"
-texto2 = "INSTRUCCIONES"
-texto3 = "SALIR"
 
 fuente = pygame.font.Font(None, 32)
 
 pantalla_actual = "menu"
 
 # Botones del menú
-cuadro1 = pygame.Rect(x, 225, 200, 50)
-cuadro2 = pygame.Rect(x, 300, 200, 50)
-cuadro3 = pygame.Rect(x, 375, 200, 50)
+cuadro1 = pygame.Rect(300, 225, 200, 50)
+cuadro2 = pygame.Rect(300, 300, 200, 50)
+cuadro3 = pygame.Rect(300, 375, 200, 50)
 
-# -----------------------------
-# IMÁGENES DEL MENÚ
-# -----------------------------
-# Todas las imágenes se buscan dentro de "imagenes"
-
-fondo = pygame.image.load("PAU.png")
-
-# La imagen del Pou del menú ya no se dibuja
-# porque principal.py se encarga del personaje
-# cuando estamos en la pantalla de juego.
-
-# Botón/cruz para volver
+# Botón de volver
 cruz = pygame.Rect(20, 20, 40, 40)
-
-
-# -----------------------------
-# BUCLE PRINCIPAL
-# -----------------------------
 
 while ejecutando:
 
     for evento in pygame.event.get():
 
-        # Cerrar ventana
         if evento.type == pygame.QUIT:
             ejecutando = False
 
-        # Detectar clic izquierdo
         if evento.type == pygame.MOUSEBUTTONDOWN:
 
             if evento.button == 1:
 
-                # -------------------------
-                # PANTALLA DEL MENÚ
-                # -------------------------
                 if pantalla_actual == "menu":
 
-                    # Botón JUGAR
                     if cuadro1.collidepoint(evento.pos):
                         pantalla_actual = "juego"
 
-                    # Botón INSTRUCCIONES
                     elif cuadro2.collidepoint(evento.pos):
                         pantalla_actual = "instrucciones"
 
-                    # Botón SALIR
                     elif cuadro3.collidepoint(evento.pos):
                         ejecutando = False
 
-                # -------------------------
-                # PANTALLA DE INSTRUCCIONES
-                # -------------------------
                 elif pantalla_actual == "instrucciones":
 
                     if cruz.collidepoint(evento.pos):
                         pantalla_actual = "menu"
 
-                # -------------------------
-                # PANTALLA DEL JUEGO
-                # -------------------------
                 elif pantalla_actual == "juego":
 
-                    # Volver al menú
                     if cruz.collidepoint(evento.pos):
                         pantalla_actual = "menu"
 
-                    # Si no se hizo clic en la cruz,
-                    # le pasamos el clic a principal.py
                     else:
                         principal.manejar_click(evento.pos)
 
-    # -----------------------------
-    # DIBUJAR EL MENÚ
-    # -----------------------------
+    # ---------------- MENU ----------------
 
     if pantalla_actual == "menu":
 
-        ventana.blit(fondo, (0, 0))
+        # Fondo negro
+        ventana.fill((0, 0, 0))
 
-        # Botones
+        # Botones blancos
         pygame.draw.rect(
             ventana,
             (255, 255, 255),
@@ -132,47 +86,46 @@ while ejecutando:
             cuadro3
         )
 
-        # Textos
-        superficietexto1 = fuente.render(
+        # Textos negros
+        texto1 = fuente.render(
+            "JUGAR",
+            True,
+            (0, 0, 0)
+        )
+
+        texto2 = fuente.render(
+            "INSTRUCCIONES",
+            True,
+            (0, 0, 0)
+        )
+
+        texto3 = fuente.render(
+            "SALIR",
+            True,
+            (0, 0, 0)
+        )
+
+        ventana.blit(
             texto1,
-            True,
-            (212, 232, 244)
+            texto1.get_rect(center=cuadro1.center)
         )
 
-        superficietexto2 = fuente.render(
+        ventana.blit(
             texto2,
-            True,
-            (212, 232, 244)
+            texto2.get_rect(center=cuadro2.center)
         )
 
-        superficietexto3 = fuente.render(
+        ventana.blit(
             texto3,
-            True,
-            (212, 232, 244)
+            texto3.get_rect(center=cuadro3.center)
         )
 
-        ventana.blit(
-            superficietexto1,
-            (x + 60, 225 + 14)
-        )
-
-        ventana.blit(
-            superficietexto2,
-            (x + 6, 300 + 14)
-        )
-
-        ventana.blit(
-            superficietexto3,
-            (x + 60, 375 + 14)
-        )
-
-    # -----------------------------
-    # PANTALLA DE INSTRUCCIONES
-    # -----------------------------
+    # ---------------- INSTRUCCIONES ----------------
 
     elif pantalla_actual == "instrucciones":
 
-        ventana.fill((223, 186, 201))
+        # Fondo negro
+        ventana.fill((0, 0, 0))
 
         texto_instrucc = fuente.render(
             "Instrucciones:",
@@ -183,7 +136,7 @@ while ejecutando:
         texto_instrucc2 = fuente.render(
             "Aca tengo que escribir las instrucciones",
             True,
-            (255, 255, 255)
+            (255, 255, 255, 255)
         )
 
         ventana.blit(
@@ -196,7 +149,7 @@ while ejecutando:
             (250, 250)
         )
 
-        # Cruz para volver
+        # Cruz blanca
         pygame.draw.line(
             ventana,
             (255, 255, 255),
@@ -213,17 +166,13 @@ while ejecutando:
             5
         )
 
-    # -----------------------------
-    # PANTALLA DEL JUEGO
-    # -----------------------------
+    # ---------------- JUEGO ----------------
 
     elif pantalla_actual == "juego":
 
-        # principal.py se encarga de TODO:
-        # fondo, barras, botones y personaje.
         principal.principal()
 
-        # Cruz para volver al menú
+        # Cruz negra
         pygame.draw.line(
             ventana,
             (0, 0, 0),
@@ -240,11 +189,8 @@ while ejecutando:
             5
         )
 
-    # Actualizar pantalla
     pygame.display.flip()
 
-    # 60 FPS
     reloj.tick(60)
-
 
 pygame.quit()
