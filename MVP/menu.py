@@ -17,12 +17,10 @@ fuente = pygame.font.Font(None, 32)
 
 pantalla_actual = "menu"
 
-# Botones del menú
 cuadro1 = pygame.Rect(300, 225, 200, 50)
 cuadro2 = pygame.Rect(300, 300, 200, 50)
 cuadro3 = pygame.Rect(300, 375, 200, 50)
 
-# Botón de volver
 cruz = pygame.Rect(20, 20, 40, 40)
 
 while ejecutando:
@@ -60,14 +58,10 @@ while ejecutando:
                     else:
                         principal.manejar_click(evento.pos)
 
-    # ---------------- MENU ----------------
-
     if pantalla_actual == "menu":
 
-        # Fondo negro
         ventana.fill((0, 0, 0))
 
-        # Botones blancos
         pygame.draw.rect(
             ventana,
             (255, 255, 255),
@@ -86,7 +80,6 @@ while ejecutando:
             cuadro3
         )
 
-        # Textos negros
         texto1 = fuente.render(
             "JUGAR",
             True,
@@ -120,8 +113,6 @@ while ejecutando:
             texto3.get_rect(center=cuadro3.center)
         )
 
-    # ---------------- INSTRUCCIONES ----------------
-
     elif pantalla_actual == "instrucciones":
 
         # Fondo negro
@@ -149,7 +140,6 @@ while ejecutando:
             (250, 250)
         )
 
-        # Cruz blanca
         pygame.draw.line(
             ventana,
             (255, 255, 255),
@@ -165,8 +155,6 @@ while ejecutando:
             (25, 55),
             5
         )
-
-    # ---------------- JUEGO ----------------
 
     elif pantalla_actual == "juego":
 

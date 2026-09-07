@@ -3,40 +3,58 @@ import pygame
 ancho = 800
 alto = 600
 
-TIEMPO_DISMINUCION = 500
-
-DURACION_NOCHE = 3000
+TIEMPO_DISMINUCION = 300
+DURACION_ACCION = 3000
 
 baño = 100
 comer = 100
 dormir = 100
 jugar = 100
-
 ultimo_descenso = pygame.time.get_ticks()
-
-inicio_noche = 0
 modo_noche = False
+inicio_noche = 0
+modo_baño = False
+inicio_baño = 0
 
-
-dia = pygame.image.load("dia.png")
-noche = pygame.image.load("noche.png")
-
-pou = pygame.image.load("pou.png")
-paufeliz = pygame.image.load("paufeliz.png")
-paumaso = pygame.image.load("paumaso.png")
-paumuerto = pygame.image.load("paumuerto.png")
-
-
-dia = pygame.transform.smoothscale(
-    dia,
-    (800, 600)
+dia = pygame.image.load(
+    "dia.png"
 )
 
-noche = pygame.transform.smoothscale(
-    noche,
-    (800, 600)
+noche = pygame.image.load(
+    "noche.png"
 )
 
+pou = pygame.image.load(
+    "pou.png"
+)
+
+paufeliz = pygame.image.load(
+    "paufeliz.png"
+)
+
+paumaso = pygame.image.load(
+    "paumaso.png"
+)
+
+paumuerto = pygame.image.load(
+    "paumuerto.png"
+)
+
+poudormido = pygame.image.load(
+    "poudormido.png"
+)
+
+jabon = pygame.image.load(
+    "jabon.png"
+)
+
+ducha = pygame.image.load(
+    "ducha.png"
+)
+
+almohada = pygame.image.load(
+    "almohada.png"
+)
 
 def escalar_personaje(imagen, tamaño_maximo):
 
@@ -47,8 +65,13 @@ def escalar_personaje(imagen, tamaño_maximo):
         tamaño_maximo / alto_original
     )
 
-    nuevo_ancho = int(ancho_original * escala)
-    nuevo_alto = int(alto_original * escala)
+    nuevo_ancho = int(
+        ancho_original * escala
+    )
+
+    nuevo_alto = int(
+        alto_original * escala
+    )
 
     return pygame.transform.smoothscale(
         imagen,
@@ -77,7 +100,32 @@ paumuerto = escalar_personaje(
     tamaño_pou
 )
 
-fuente = pygame.font.Font(None, 28)
+poudormido = escalar_personaje(
+    poudormido,
+    tamaño_pou
+)
+
+tamaño_objetos = 110
+
+jabon = escalar_personaje(
+    jabon,
+    tamaño_objetos
+)
+
+ducha = escalar_personaje(
+    ducha,
+    tamaño_objetos
+)
+
+almohada = escalar_personaje(
+    almohada,
+    tamaño_objetos
+)
+
+fuente = pygame.font.Font(
+    None,
+    28
+)
 
 boton_baño = pygame.Rect(
     70,
@@ -136,7 +184,7 @@ barra_jugar = pygame.Rect(
 )
 
 def dibujar_barra(ventana, rectangulo, valor):
-    
+
     pygame.draw.rect(
         ventana,
         (220, 220, 220),
@@ -199,12 +247,16 @@ def dibujar_boton(ventana, rectangulo, texto):
 
 def obtener_personaje():
 
+    if modo_noche:
+        return poudormido
+
     if (
         baño <= 5
         or comer <= 5
         or dormir <= 5
         or jugar <= 5
     ):
+
         return paumuerto
 
     if (
@@ -213,6 +265,7 @@ def obtener_personaje():
         or dormir <= 40
         or jugar <= 40
     ):
+
         return pou
 
     if (
@@ -221,6 +274,7 @@ def obtener_personaje():
         or dormir < 95
         or jugar < 95
     ):
+
         return paumaso
 
     return paufeliz
@@ -233,6 +287,8 @@ def manejar_click(posicion):
     global jugar
     global modo_noche
     global inicio_noche
+    global modo_baño
+    global inicio_baño
 
     if boton_baño.collidepoint(posicion):
 
@@ -240,6 +296,10 @@ def manejar_click(posicion):
             100,
             baño + 10
         )
+
+        modo_baño = True
+
+        inicio_baño = pygame.time.get_ticks()
 
     elif boton_comer.collidepoint(posicion):
 
@@ -256,7 +316,6 @@ def manejar_click(posicion):
         )
 
         modo_noche = True
-
         inicio_noche = pygame.time.get_ticks()
 
     elif boton_jugar.collidepoint(posicion):
@@ -274,10 +333,14 @@ def actualizar_necesidades():
     global jugar
     global ultimo_descenso
     global modo_noche
+    global modo_baño
 
     tiempo_actual = pygame.time.get_ticks()
 
-    if tiempo_actual - ultimo_descenso >= TIEMPO_DISMINUCION:
+    if (
+        tiempo_actual - ultimo_descenso
+        >= TIEMPO_DISMINUCION
+    ):
 
         baño = max(
             0,
@@ -299,21 +362,41 @@ def actualizar_necesidades():
             jugar - 1
         )
 
+
         ultimo_descenso = tiempo_actual
 
     if modo_noche:
 
-        if tiempo_actual - inicio_noche >= DURACION_NOCHE:
+        if (
+            tiempo_actual - inicio_noche
+            >= DURACION_ACCION
+        ):
 
             modo_noche = False
+
+    if modo_baño:
+
+        if (
+            tiempo_actual - inicio_baño
+            >= DURACION_ACCION
+        ):
+
+            modo_baño = False
 
 def principal():
 
     ventana = pygame.display.get_surface()
-
     actualizar_necesidades()
+    ventana.fill(
+        (0, 0, 0)
+    )
 
-    ventana.fill((0, 0, 0))
+    if modo_noche:
+
+        ventana.blit(
+            noche,
+            (0, 0)
+        )
 
     dibujar_barra(
         ventana,
@@ -364,12 +447,42 @@ def principal():
     )
 
     personaje_actual = obtener_personaje()
-
     posicion_pou = personaje_actual.get_rect(
-        center=(400, 315)
+        center=(400, 350)
     )
 
     ventana.blit(
         personaje_actual,
         posicion_pou
     )
+
+    if modo_baño:
+
+        posicion_jabon = jabon.get_rect(
+            center=(265, 350)
+        )
+
+        ventana.blit(
+            jabon,
+            posicion_jabon
+        )
+
+        posicion_ducha = ducha.get_rect(
+            center=(535, 350)
+        )
+
+        ventana.blit(
+            ducha,
+            posicion_ducha
+        )
+
+    if modo_noche:
+        
+        posicion_almohada = almohada.get_rect(
+            center=(535, 390)
+        )
+
+        ventana.blit(
+            almohada,
+            posicion_almohada
+        )
