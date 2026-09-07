@@ -4,7 +4,6 @@ ancho = 800
 alto = 600
 
 TIEMPO_DISMINUCION = 500
-
 DURACION_NOCHE = 3000
 
 baño = 100
@@ -17,7 +16,6 @@ ultimo_descenso = pygame.time.get_ticks()
 inicio_noche = 0
 modo_noche = False
 
-
 dia = pygame.image.load("dia.png")
 noche = pygame.image.load("noche.png")
 
@@ -25,7 +23,6 @@ pou = pygame.image.load("pou.png")
 paufeliz = pygame.image.load("paufeliz.png")
 paumaso = pygame.image.load("paumaso.png")
 paumuerto = pygame.image.load("paumuerto.png")
-
 
 dia = pygame.transform.smoothscale(
     dia,

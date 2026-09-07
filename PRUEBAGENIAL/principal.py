@@ -78,7 +78,7 @@ def escalar_personaje(imagen, tamaño_maximo):
         (nuevo_ancho, nuevo_alto)
     )
 
-tamaño_pou = 220
+tamaño_pou = 240
 
 pou = escalar_personaje(
     pou,
@@ -105,7 +105,7 @@ poudormido = escalar_personaje(
     tamaño_pou
 )
 
-tamaño_objetos = 110
+tamaño_objetos = 120
 
 jabon = escalar_personaje(
     jabon,

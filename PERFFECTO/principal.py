@@ -4,10 +4,9 @@ import pygame
 ancho = 800
 alto = 600
 
-TIEMPO_DISMINUCION = 5000
+TIEMPO_DISMINUCION = 500
 
 DURACION_NOCHE = 3000
-
 
 bano = 100
 comer = 100
@@ -16,21 +15,14 @@ jugar = 100
 
 
 ultimo_descenso = pygame.time.get_ticks()
-
 inicio_noche = 0
-
 modo_noche = False
-
-
-
 dia = pygame.image.load("dia.png")
 noche = pygame.image.load("noche.png")
-
 pou = pygame.image.load("pou.png")
 paufeliz = pygame.image.load("paufeliz.png")
 paumaso = pygame.image.load("paumaso.png")
 paumuerto = pygame.image.load("paumuerto.png")
-
 
 dia = pygame.transform.smoothscale(
     dia,
@@ -41,7 +33,6 @@ noche = pygame.transform.smoothscale(
     noche,
     (800, 600)
 )
-
 
 def escalar_personaje(imagen, tamaño_maximo):
 
@@ -66,28 +57,16 @@ pou = escalar_personaje(pou, tamaño_pou)
 paufeliz = escalar_personaje(paufeliz, tamaño_pou)
 paumaso = escalar_personaje(paumaso, tamaño_pou)
 paumuerto = escalar_personaje(paumuerto, tamaño_pou)
-
-
-
 fuente = pygame.font.Font(None, 28)
 fuente_numero = pygame.font.Font(None, 25)
-
-
-
-boton_bano = pygame.Rect(70, 210, 150, 55)
+boton_baño = pygame.Rect(70, 210, 150, 55)
 boton_comer = pygame.Rect(580, 210, 150, 55)
-
 boton_dormir = pygame.Rect(70, 430, 150, 55)
 boton_jugar = pygame.Rect(580, 430, 150, 55)
-
-
-
-barra_bano = pygame.Rect(30, 65, 170, 25)
+barra_baño = pygame.Rect(30, 65, 170, 25)
 barra_comer = pygame.Rect(220, 65, 170, 25)
 barra_dormir = pygame.Rect(410, 65, 170, 25)
 barra_jugar = pygame.Rect(600, 65, 170, 25)
-
-
 
 def dibujar_barra(ventana, rectangulo, nombre, valor):
 
@@ -149,8 +128,6 @@ def dibujar_barra(ventana, rectangulo, nombre, valor):
         )
     )
 
-
-
 def dibujar_boton(ventana, rectangulo, texto):
 
     pygame.draw.rect(
@@ -181,13 +158,10 @@ def dibujar_boton(ventana, rectangulo, texto):
         posicion_texto
     )
 
-
-
 def obtener_personaje():
 
-
     if (
-        bano <= 5
+        baño <= 5
         or comer <= 5
         or dormir <= 5
         or jugar <= 5
@@ -196,7 +170,7 @@ def obtener_personaje():
 
 
     if (
-        bano <= 40
+        baño <= 40
         or comer <= 40
         or dormir <= 40
         or jugar <= 40
@@ -205,7 +179,7 @@ def obtener_personaje():
 
 
     if (
-        bano < 95
+        baño < 95
         or comer < 95
         or dormir < 95
         or jugar < 95
@@ -216,7 +190,7 @@ def obtener_personaje():
 
 def manejar_click(posicion):
 
-    global bano
+    global baño
     global comer
     global dormir
     global jugar
@@ -224,9 +198,9 @@ def manejar_click(posicion):
     global inicio_noche
 
 
-    if boton_bano.collidepoint(posicion):
+    if boton_baño.collidepoint(posicion):
 
-        bano = min(100, bano + 10)
+        baño = min(100, baño + 10)
 
     elif boton_comer.collidepoint(posicion):
 
@@ -246,7 +220,7 @@ def manejar_click(posicion):
 
 def actualizar_necesidades():
 
-    global bano
+    global baño
     global comer
     global dormir
     global jugar
@@ -255,16 +229,14 @@ def actualizar_necesidades():
 
     tiempo_actual = pygame.time.get_ticks()
 
-
     if tiempo_actual - ultimo_descenso >= TIEMPO_DISMINUCION:
 
-        bano = max(0, bano - 1)
+        baño = max(0, baño - 1)
         comer = max(0, comer - 1)
         dormir = max(0, dormir - 1)
         jugar = max(0, jugar - 1)
 
         ultimo_descenso = tiempo_actual
-
 
     if modo_noche:
 
@@ -272,26 +244,22 @@ def actualizar_necesidades():
 
             modo_noche = False
 
-
-
 def principal():
 
     ventana = pygame.display.get_surface()
 
     actualizar_necesidades()
 
-
     if modo_noche:
         ventana.blit(noche, (0, 0))
     else:
         ventana.blit(dia, (0, 0))
 
-
     dibujar_barra(
         ventana,
-        barra_bano,
+        barra_baño,
         "BAÑO",
-        bano
+        baño
     )
 
     dibujar_barra(
@@ -317,7 +285,7 @@ def principal():
 
     dibujar_boton(
         ventana,
-        boton_bano,
+        boton_baño,
         "BAÑO"
     )
 
