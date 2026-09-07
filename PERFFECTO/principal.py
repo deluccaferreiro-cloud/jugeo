@@ -23,6 +23,9 @@ pou = pygame.image.load("pou.png")
 paufeliz = pygame.image.load("paufeliz.png")
 paumaso = pygame.image.load("paumaso.png")
 paumuerto = pygame.image.load("paumuerto.png")
+jabon = pygame.image.load("jabon.png")
+ducha = pygame.image.load("ducha.png")
+almohada = pygame.image.load("almohada.png")
 
 dia = pygame.transform.smoothscale(
     dia,
