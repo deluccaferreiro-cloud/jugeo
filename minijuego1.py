@@ -27,7 +27,6 @@ espacio= 170
 velocidad_tubos=4
 ob= []
 
-
 x_tubo = 800
 altura_arriba = random.randint(100, 350)
 ob.append([
@@ -36,12 +35,12 @@ altura_arriba
 ])
 
 puntos=0
-fuente = pygame.font.Font(None, 50)
+fuente = pygame.Font(None, 50)
 
 def crear_ob(ob):
     altura = random.randint(100, 350)
     ob.append([800, altura])
-
+    
 while jugando:
     reloj.tick(60)
     for evento in pygame.event.get():   
@@ -78,6 +77,45 @@ while jugando:
             ancho_pau,
             alto_pau
         )
-
     for tubos in ob :
-          
+        x = tubo[0]
+        altura = tubo[1]
+
+        tubo_arriba = pygame.Rect(
+                x,
+                0,
+            ancho_ob,
+            altura
+        )
+        ob_abajo = pygame.Rect(
+                x,
+                altura + espacio,
+                ancho_ob,
+                ALTO
+        )
+    if pau_rect.colliderect(tubo_arriba):
+                game_over = True
+    elif pau_rect.colliderect(ob_abajo):
+                game_over = True
+    elif y_pau + alto_pau >= ALTO:
+            game_over = True
+
+    if y_pau <= 0:
+        game_over=True
+
+    for tubo in tubos:
+        x = tubo[0]
+        altura = tubo[1]
+        pygame.draw.rect(
+            ventana,
+            (x, 0, ancho_ob, altura,(0,128,0))
+        )
+        pygame.draw.rect(
+            ventana,
+            (x, altura + espacio, ancho_ob,ALTO,(0,128,0))
+        )
+        pygame.draw.ellipse(
+            ventana,
+            pau
+            (x_pau, y_pau, ancho_pau, alto_pau)
+        )
