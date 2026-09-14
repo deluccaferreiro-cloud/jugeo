@@ -106,16 +106,50 @@ while jugando:
     for tubo in tubos:
         x = tubo[0]
         altura = tubo[1]
+        verde=(0,128,0)
         pygame.draw.rect(
             ventana,
-            (x, 0, ancho_ob, altura,(0,128,0))
+            verde
+            (x, 0, ancho_ob, altura,)
         )
         pygame.draw.rect(
             ventana,
-            (x, altura + espacio, ancho_ob,ALTO,(0,128,0))
+            verde
+            (x, altura + espacio, ancho_ob,ALTO,)
         )
         pygame.draw.ellipse(
             ventana,
             pau
             (x_pau, y_pau, ancho_pau, alto_pau)
         )
+
+    blanco=(255,255,255)
+    texto = fuente.render(str(puntos), True, blanco)
+    ventana.blit(texto, (ANCHO // 2, 30))
+
+    if game_over:
+        texto_game_over=fuente.render(
+                "GAME OVER...",
+                    True,
+                    blanco
+        )
+texto_reiniciar = pygame.font.Font(None, 30).render(
+            "Presiona ESPACIO para reiniciar",
+            True,
+            blanco
+        )
+ventana.blit(
+            texto_game_over,
+            (ANCHO // 2 - 110, ALTO // 2 - 40)
+        )
+
+ventana.blit(
+            texto_reiniciar,
+            (ANCHO // 2 - 150, ALTO // 2 + 20)
+        )
+
+pygame.display.update()
+
+
+pygame.quit()
+        
