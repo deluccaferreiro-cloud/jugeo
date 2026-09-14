@@ -88,8 +88,7 @@ while ejecutando:
             (255, 255, 255)
         )
         texto_instrucc2 = fuente.render(
-            "Cuida a tu POU haciendo click en los botones para mantener sus necesidades satisfechas."
-             " De lo contrario, morira.",
+            "Aca hay que poner las instrucciones del juego",
             True,
             (255, 255, 255, 255)
         )
