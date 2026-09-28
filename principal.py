@@ -162,7 +162,7 @@ def manejar_click(posicion):
         if boton_comidas.collidepoint(posicion):
             mensaje_temporal = "Todavía no disponible"
             tiempo_mensaje = pygame.time.get_ticks()
-
+            
 def actualizar_necesidades():
     global baño, comer, dormir, jugar, ultimo_descenso, ultimo_incremento_dormir, modo_noche
 
