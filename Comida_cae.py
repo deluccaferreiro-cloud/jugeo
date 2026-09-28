@@ -19,7 +19,7 @@ alto_pau=100
 velocidad_pau=7 
 vidas_pau=3
 
-comida_diccionario={}
+comida_lista=[]
 velocidad_comida=0
 contador_comida=0
 comida_buena1=pygame.image.load()
@@ -40,7 +40,7 @@ while jugando:
                     x_pau
                     puntaje_comidita
                     vidas_pau
-                    comida_diccionario.clear()
+                    comida_lista.clear()
                     game_over= False
 if not game_over:
         teclas=pygame.key.get_pressed()
@@ -61,9 +61,9 @@ if contador_comida >= 50:
     tipo = random.randint(1, 10) 
     if tipo <= 7: tipo_comida = "buena" 
     else: tipo_comida = "mala" 
-    comida_diccionario.append([ x_comida, -50, tipo_comida ])
+    comida_lista.append([ x_comida, -50, tipo_comida ])
 
-    for comida in comida_diccionario:
+    for comida in comida_lista:
          comida[1]+=velocidad_comida
 
 pau_rect=pygame.Rect(
@@ -72,3 +72,33 @@ pau_rect=pygame.Rect(
      100,
      100
 )
+esta_comiendo= False
+for comida in comida_lista:
+     comida_rect = pygame.Rect( 
+        comida[0],
+        comida[1], 
+        50, 
+        50 
+)
+if pau_rect.collidedict(comida_rect):
+     if comida[2]=="buena":
+        puntaje_comidita+=1
+        esta_comiendo=True
+        contador_comida=15
+else:
+        vidas_pau -=1
+
+if vidas_pau <= 0: 
+        game_over = True
+comida[1] = ALTO+ 100
+
+comidas =[ 
+    comida for comida in comida_lista
+     if comida[1] < ALTO + 50 
+]
+
+if comida_lista >0:
+     
+     
+     
+     
