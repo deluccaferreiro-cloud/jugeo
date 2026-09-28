@@ -1,5 +1,10 @@
 import pygame
-import random
+import random, os
+
+def encontrar_archivo(nombre):
+    carpeta_raiz = os.path.dirname(__file__)
+    archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "flappy", nombre)
+    return archivo
 
 pygame.init()
 
@@ -14,8 +19,8 @@ pygame.display.set_caption("Flappy Pau")
 
 reloj = pygame.time.Clock()
 
-fondo = pygame.image.load("flappy.png")
-pau = pygame.image.load("flappypau.png")
+fondo = pygame.image.load(encontrar_archivo("flappy.png"))
+pau = pygame.image.load(encontrar_archivo("flappypau.png"))
 
 x_pau = 150
 y_pau = 300
