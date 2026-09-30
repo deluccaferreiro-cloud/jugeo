@@ -1,15 +1,13 @@
 import pygame
 
-# Inicializar Pygame al inicio para evitar errores de fuentes
 pygame.init()
 
 ancho = 800
 alto = 600
 
 TIEMPO_DISMINUCION = 1000
-DURACION_NOCHE = 3000  # Aumentado ligeramente para dar tiempo a recargar la barra
+DURACION_NOCHE = 3000
 
-# Estados de necesidades
 baño = 100
 comer = 100
 dormir = 100
@@ -20,15 +18,12 @@ ultimo_incremento_dormir = pygame.time.get_ticks()
 inicio_noche = 0
 modo_noche = False
 
-# Mensajes emergentes
 mensaje_temporal = ""
 tiempo_mensaje = 0
 
-# --- NAVEGACIÓN Y HABITACIONES ---
 habitacion_actual = 0
 nombres_habitaciones = ["BAÑO", "SALA DE ESTAR", "HABITACIÓN", "COCINA"]
 
-# Control de submenús
 subpantalla = "normal"
 try:
     fondo_bano = pygame.transform.smoothscale(pygame.image.load("bano.png"), (ancho, alto))

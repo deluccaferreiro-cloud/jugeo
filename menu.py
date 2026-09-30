@@ -24,7 +24,6 @@ cuadro1 = pygame.Rect(x, 225, 200, 50)
 cuadro2 = pygame.Rect(x, 300, 200, 50)
 cuadro3 = pygame.Rect(x, 375, 200, 50)
 
-# Botón para salir/volver al menú cuando estás dentro del juego
 cruz = pygame.Rect(740, 10, 40, 40)
 
 try:
@@ -54,7 +53,6 @@ while ejecutando:
                         pantalla_actual = "menu"
 
                 elif pantalla_actual == "juego":
-                    # Si toca la esquina superior derecha (cruz), vuelve al menú
                     if cruz.collidepoint(evento.pos):
                         pantalla_actual = "menu"
                     else:
@@ -67,9 +65,9 @@ while ejecutando:
         pygame.draw.rect(ventana, (255, 255, 255), cuadro2)
         pygame.draw.rect(ventana, (255, 255, 255), cuadro3)
 
-        superficietexto1 = fuente.render(texto1, True, (0, 0, 0))
-        superficietexto2 = fuente.render(texto2, True, (0, 0, 0))
-        superficietexto3 = fuente.render(texto3, True, (0, 0, 0))
+        superficietexto1 = fuente.render(texto1, True, (194,228,255))
+        superficietexto2 = fuente.render(texto2, True, (194,228,255))
+        superficietexto3 = fuente.render(texto3, True, (194,228,255))
 
         ventana.blit(superficietexto1, (x + 60, 225 + 14))
         ventana.blit(superficietexto2, (x + 10, 300 + 14))
@@ -84,14 +82,12 @@ while ejecutando:
         ventana.blit(texto_instrucc, (250, 200))
         ventana.blit(texto_instrucc2, (200, 250))
 
-        # Dibujar cruz para volver
         pygame.draw.line(ventana, (255, 255, 255), (740, 10), (770, 40), 5)
         pygame.draw.line(ventana, (255, 255, 255), (770, 10), (740, 40), 5)
 
     elif pantalla_actual == "juego":
         principal.principal()
 
-        # Dibujar cruz para volver al menú en la esquina superior derecha
         pygame.draw.line(ventana, (0, 0, 0), (740, 10), (770, 40), 5)
         pygame.draw.line(ventana, (0, 0, 0), (770, 10), (740, 40), 5)
 
