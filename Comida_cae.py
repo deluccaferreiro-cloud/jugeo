@@ -1,7 +1,12 @@
 import pygame
-import random
+import random, os
 jugando=True
 game_over= False
+
+def encontrar_archivo(nombre):
+    carpeta_raiz = os.path.dirname(__file__)
+    archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "comidaquecae", nombre)
+    return archivo
 
 pygame.init()
 ANCHO=800
@@ -9,8 +14,8 @@ ALTO=500
 ventana= pygame.display.set_mode(ANCHO,ALTO)
 reloj=pygame.time.Clock()
 
-fondo= pygame.image.load("comida.png")
-pau_masticando=pygame.image.load("paumasticando.png")
+fondo= pygame.image.load(encontrar_archivo("comida.png"))
+pau_masticando=pygame.image.load(encontrar_archivo("paumasticando.png"))
 pau_agarrar_comida=pygame.image.load("paubocaabiertaparaM2.png")
 x_pau=350
 y_pau=450
@@ -22,12 +27,11 @@ vidas_pau=3
 comida_lista=[]
 velocidad_comida=0
 contador_comida=0
-comida_buena1=pygame.image.load()
-comida_buena2=pygame.image.load()
-comida_mala1=pygame.image.load()
-comida_mala2=pygame.image.load()
-puntaje_comidita=0
+comida_buena=pygame.image.load()
+comida_mala=pygame.image.load()
 
+puntaje_comidita=0
+fuente = pygame.font.Font(None, 50)
 while jugando:
     reloj.tick(60)
 
@@ -97,8 +101,68 @@ comidas =[
      if comida[1] < ALTO + 50 
 ]
 
-if comida_lista >0:
-     
-     
-     
-     
+if contador_comida > 0:
+     contador_comida -=1
+     esta_comiendo=True
+else:
+     esta_comiendo=False
+
+ventana.blit(fondo,(0,0))
+
+for comida in comida_lista:
+     if comida[2]=="buena":
+          ventana.blit(
+               comida_buena,
+               (comida[0],comida[1])
+          )
+     else:
+          ventana.blit(
+               comida_mala,
+               (comida[0],comida[1])
+          )
+
+if esta_comiendo:
+     ventana.blit(
+          pau_masticando,
+          (x_pau,y_pau)
+     )
+
+texto_punto=fuente.render(
+     puntaje_comidita + str(puntaje_comidita),
+     True,
+     (255, 255, 255)
+)
+ventana.blit(
+     texto_punto,
+    (20,20)
+)
+texto_vidas= fuente.render(
+    vidas_pau + str(vidas_pau),
+    True,
+    (20,60)
+)
+
+if game_over:
+     texto_game_over= fuente.render(
+          "GAME OVER",
+          True
+          (255,0,0)
+     )
+texto_reiniciar = pygame.font.Font( None, 30 
+                ).render( 
+                "Presiona ESPACIO para volver a jugar", 
+                True, 
+                (255, 255, 255) ) 
+ventana.blit( 
+     texto_game_over, 
+     (320, 270) 
+     ) 
+ventana.blit( 
+     texto_reiniciar, 
+     (220, 320) ) 
+
+
+pygame.display.update() 
+
+
+pygame.quit()

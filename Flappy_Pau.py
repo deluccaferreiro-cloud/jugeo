@@ -34,9 +34,14 @@ def ejecutar_flappy():
 
     ventana = pygame.display.get_surface()
 
+<<<<<<< HEAD
     pygame.display.set_caption(
         "Flappy Pau"
     )
+=======
+ancho_pau = 67
+alto_pau = 67
+>>>>>>> 05afafcdb0faa84c8e2087a398d19932e76d11e8
 
 
     # ------------------------------------------------
