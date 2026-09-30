@@ -25,8 +25,8 @@ pau = pygame.image.load(encontrar_archivo("flappypau.png"))
 x_pau = 150
 y_pau = 300
 
-ancho_pau = 40
-alto_pau = 40
+ancho_pau = 100
+alto_pau = 100
 
 
 pau = pygame.transform.scale(pau, (ancho_pau, alto_pau))
