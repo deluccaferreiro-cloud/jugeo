@@ -13,5 +13,5 @@ fondo=pygame.image.load("flotaflota.png")
 pau_N=pygame.image.load("paumaso.png")
 alto_pau=100
 ancho_pau=100
-x_pau=
-y_pau=
+x_pau=0
+y_pau=0
