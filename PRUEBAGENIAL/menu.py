@@ -2,7 +2,7 @@ import pygame
 
 pygame.init()
 
-import principal
+import ultima.principal as principal
 
 ancho = 800
 alto = 600

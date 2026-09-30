@@ -8,7 +8,7 @@ alto = 600
 ventana = pygame.display.set_mode((ancho, alto))
 pygame.display.set_caption("PAU")
 
-import principal
+import ultima.principal as principal
 
 ejecutando = True
 reloj = pygame.time.Clock()

@@ -1,5 +1,5 @@
 import pygame
-import Flappy_Pau
+import minijuegos.Flappy_Pau as Flappy_Pau
 
 pygame.init()
 
