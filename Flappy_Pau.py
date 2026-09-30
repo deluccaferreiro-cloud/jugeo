@@ -1,229 +1,402 @@
 import pygame
-import random, os
-
-def encontrar_archivo(nombre):
-    carpeta_raiz = os.path.dirname(__file__)
-    archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "flappy", nombre)
-    return archivo
-
-pygame.init()
-
-jugando = True
-game_over = False
-
-ANCHO = 800
-ALTO = 500
-
-ventana = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Flappy Pau")
-
-reloj = pygame.time.Clock()
-
-fondo = pygame.image.load(encontrar_archivo("flappy.png"))
-pau = pygame.image.load(encontrar_archivo("flappypau.png"))
-
-x_pau = 150
-y_pau = 300
-
-ancho_pau = 67
-alto_pau = 67
+import random
+import os
 
 
-pau = pygame.transform.scale(pau, (ancho_pau, alto_pau))
+def ejecutar_flappy():
 
-velocidad_y = 0
-gravedad = 0.5
-salto = -9
+    pygame.init()
 
-ancho_ob = 80
-espacio = 170
-velocidad_tubos = 4
+    ANCHO = 800
+    ALTO = 600
 
-ob = []
+    # Usamos la ventana que ya creó el juego principal
+    ventana = pygame.display.get_surface()
 
-x_tubo = 800
-altura_arriba = random.randint(100, 300)
+    if ventana is None:
+        ventana = pygame.display.set_mode((ANCHO, ALTO))
 
-ob.append([
-    x_tubo,
-    altura_arriba
-])
+    pygame.display.set_caption("Flappy Pau")
 
-puntos = 0
+    reloj = pygame.time.Clock()
 
-fuente = pygame.font.Font(None, 50)
+    # =========================================================
+    # RUTAS DE LAS IMÁGENES
+    # =========================================================
 
+    carpeta = os.path.dirname(os.path.abspath(__file__))
 
-def crear_ob(ob):
-    altura = random.randint(100, 300)
-    ob.append([800, altura])
+    ruta_fondo = os.path.join(
+        carpeta,
+        "assets",
+        "minijuegos",
+        "flappy",
+        "flappy.png"
+    )
 
+    ruta_pau = os.path.join(
+        carpeta,
+        "assets",
+        "minijuegos",
+        "flappy",
+        "flappypau.png"
+    )
 
-while jugando:
+    # =========================================================
+    # CARGAR IMÁGENES
+    # =========================================================
 
-    reloj.tick(60)
+    fondo = pygame.image.load(ruta_fondo).convert()
+    pau = pygame.image.load(ruta_pau).convert_alpha()
 
-    
-    for evento in pygame.event.get():
+    # Fondo ocupando toda la pantalla
+    fondo = pygame.transform.scale(
+        fondo,
+        (ANCHO, ALTO)
+    )
 
-        if evento.type == pygame.QUIT:
-            jugando = False
-
-        if evento.type == pygame.KEYDOWN:
-
-            if evento.key == pygame.K_SPACE:
-
-                if game_over:
-                    y_pau = 300
-                    velocidad_y = 0
-
-                    ob.clear()
-                    ob.append([800, random.randint(100, 300)])
-
-                    puntos = 0
-                    game_over = False
-
-                else:
-                    velocidad_y = salto
-
-    
-    if not game_over:
-
-    
-        velocidad_y += gravedad
-        y_pau += velocidad_y
-
-        
-        for tubo in ob:
-            tubo[0] -= velocidad_tubos
-
-        
-        if len(ob) > 0 and ob[-1][0] < 450:
-            crear_ob(ob)
-
-       
-        if len(ob) > 0 and ob[0][0] < -ancho_ob:
-            ob.pop(0)
-            puntos += 1
-
-        
-        pau_rect = pygame.Rect(
-            x_pau,
-            y_pau,
-            ancho_pau,
-            alto_pau
-        )
-
-        
-        for tubo in ob:
-
-            x = tubo[0]
-            altura = tubo[1]
-
-            tubo_arriba = pygame.Rect(
-                x,
-                0,
-                ancho_ob,
-                altura
-            )
-
-            tubo_abajo = pygame.Rect(
-                x,
-                altura + espacio,
-                ancho_ob,
-                ALTO - (altura + espacio)
-            )
-
-            if pau_rect.colliderect(tubo_arriba):
-                game_over = True
-
-            if pau_rect.colliderect(tubo_abajo):
-                game_over = True
-
-    
-        if y_pau + alto_pau >= ALTO:
-            game_over = True
-
-        
-        if y_pau <= 0:
-            game_over = True
-
-    ventana.blit(fondo, (0, 0))
-
-
-    verde = (0, 128, 0)
-
-    for tubo in ob:
-
-        x = tubo[0]
-        altura = tubo[1]
-
-        pygame.draw.rect(
-            ventana,
-            verde,
-            (x, 0, ancho_ob, altura)
-        )
-
-        pygame.draw.rect(
-            ventana,
-            verde,
-            (
-                x,
-                altura + espacio,
-                ancho_ob,
-                ALTO - (altura + espacio)
-            )
-        )
-
-  
-    ventana.blit(
+    # Pau
+    pau = pygame.transform.scale(
         pau,
-        (x_pau, y_pau)
+        (100, 100)
     )
 
-   
-    blanco = (255, 255, 255)
+    # =========================================================
+    # VARIABLES DEL JUEGO
+    # =========================================================
 
-    texto = fuente.render(
-        str(puntos),
-        True,
-        blanco
-    )
+    pau_x = 150
+    pau_y = 300
 
-    ventana.blit(
-        texto,
-        (ANCHO // 2, 30)
-    )
+    velocidad_y = 0
 
-    
-    if game_over:
+    gravedad = 0.5
+    salto = -9
 
-        texto_game_over = fuente.render(
-            "GAME OVER...",
-            True,
-            blanco
+    # =========================================================
+    # TUBOS
+    # =========================================================
+
+    ancho_tubo = 80
+    espacio = 170
+    velocidad_tubos = 4
+
+    obstaculos = []
+
+    def crear_tubo():
+
+        altura = random.randint(100, 300)
+
+        obstaculos.append({
+            "x": ANCHO,
+            "altura": altura,
+            "paso": False
+        })
+
+    crear_tubo()
+
+    # =========================================================
+    # PUNTOS
+    # =========================================================
+
+    puntos = 0
+
+    fuente = pygame.font.Font(None, 50)
+    fuente_game_over = pygame.font.Font(None, 70)
+    fuente_reinicio = pygame.font.Font(None, 35)
+
+    # =========================================================
+    # ESTADO
+    # =========================================================
+
+    jugando = True
+    game_over = False
+
+    while jugando:
+
+        # =====================================================
+        # EVENTOS
+        # =====================================================
+
+        for evento in pygame.event.get():
+
+            if evento.type == pygame.QUIT:
+                jugando = False
+
+            if evento.type == pygame.KEYDOWN:
+
+                # ESC = volver al menú de minijuegos
+                if evento.key == pygame.K_ESCAPE:
+                    jugando = False
+
+                # ESPACIO = saltar
+                if evento.key == pygame.K_SPACE:
+
+                    if game_over:
+
+                        # Reiniciar
+                        pau_y = 300
+                        velocidad_y = 0
+
+                        obstaculos.clear()
+
+                        crear_tubo()
+
+                        puntos = 0
+
+                        game_over = False
+
+                    else:
+
+                        velocidad_y = salto
+
+        # =====================================================
+        # JUEGO
+        # =====================================================
+
+        if not game_over:
+
+            # Gravedad
+            velocidad_y += gravedad
+            pau_y += velocidad_y
+
+            # -------------------------------------------------
+            # MOVER TUBOS
+            # -------------------------------------------------
+
+            for tubo in obstaculos:
+
+                tubo["x"] -= velocidad_tubos
+
+            # -------------------------------------------------
+            # CREAR NUEVO TUBO
+            # -------------------------------------------------
+
+            if len(obstaculos) == 0 or obstaculos[-1]["x"] < 450:
+                crear_tubo()
+
+            # -------------------------------------------------
+            # BORRAR TUBOS QUE SALIERON
+            # -------------------------------------------------
+
+            obstaculos = [
+                tubo for tubo in obstaculos
+                if tubo["x"] + ancho_tubo > 0
+            ]
+
+            # -------------------------------------------------
+            # RECTÁNGULO DE PAU
+            # -------------------------------------------------
+
+            rect_pau = pygame.Rect(
+                pau_x,
+                int(pau_y),
+                100,
+                100
+            )
+
+            # -------------------------------------------------
+            # COLISIONES CON LOS TUBOS
+            # -------------------------------------------------
+
+            for tubo in obstaculos:
+
+                x = tubo["x"]
+                altura = tubo["altura"]
+
+                tubo_arriba = pygame.Rect(
+                    x,
+                    0,
+                    ancho_tubo,
+                    altura
+                )
+
+                tubo_abajo = pygame.Rect(
+                    x,
+                    altura + espacio,
+                    ancho_tubo,
+                    ALTO - (altura + espacio)
+                )
+
+                if rect_pau.colliderect(tubo_arriba):
+                    game_over = True
+
+                if rect_pau.colliderect(tubo_abajo):
+                    game_over = True
+
+                # -------------------------------------------------
+                # PUNTOS
+                # -------------------------------------------------
+
+                if not tubo["paso"] and x + ancho_tubo < pau_x:
+
+                    tubo["paso"] = True
+                    puntos += 1
+
+            # -------------------------------------------------
+            # BORDES DE LA PANTALLA
+            # -------------------------------------------------
+
+            if pau_y < 0:
+                game_over = True
+
+            if pau_y + 100 > ALTO:
+                game_over = True
+
+        # =====================================================
+        # DIBUJAR FONDO
+        # =====================================================
+
+        ventana.blit(fondo, (0, 0))
+
+        # =====================================================
+        # DIBUJAR TUBOS
+        # =====================================================
+
+        for tubo in obstaculos:
+
+            x = tubo["x"]
+            altura = tubo["altura"]
+
+            # Tubo de arriba
+            pygame.draw.rect(
+                ventana,
+                (0, 180, 0),
+                (
+                    x,
+                    0,
+                    ancho_tubo,
+                    altura
+                )
+            )
+
+            # Borde del tubo de arriba
+            pygame.draw.rect(
+                ventana,
+                (0, 120, 0),
+                (
+                    x,
+                    0,
+                    ancho_tubo,
+                    altura
+                ),
+                4
+            )
+
+            # Tubo de abajo
+            pygame.draw.rect(
+                ventana,
+                (0, 180, 0),
+                (
+                    x,
+                    altura + espacio,
+                    ancho_tubo,
+                    ALTO - (altura + espacio)
+                )
+            )
+
+            # Borde del tubo de abajo
+            pygame.draw.rect(
+                ventana,
+                (0, 120, 0),
+                (
+                    x,
+                    altura + espacio,
+                    ancho_tubo,
+                    ALTO - (altura + espacio)
+                ),
+                4
+            )
+
+        # =====================================================
+        # DIBUJAR PAU
+        # =====================================================
+
+        ventana.blit(
+            pau,
+            (
+                pau_x,
+                int(pau_y)
+            )
         )
 
-        texto_reiniciar = pygame.font.Font(
-            None,
-            30
-        ).render(
-            "Presiona ESPACIO para reiniciar",
+        # =====================================================
+        # PUNTOS
+        # =====================================================
+
+        texto_puntos = fuente.render(
+            str(puntos),
             True,
-            blanco
+            (255, 255, 255)
         )
 
         ventana.blit(
-            texto_game_over,
-            (ANCHO // 2 - 110, ALTO // 2 - 40)
+            texto_puntos,
+            (
+                ANCHO // 2 - texto_puntos.get_width() // 2,
+                30
+            )
         )
 
-        ventana.blit(
-            texto_reiniciar,
-            (ANCHO // 2 - 150, ALTO // 2 + 20)
-        )
+        # =====================================================
+        # GAME OVER
+        # =====================================================
 
-    pygame.display.update()
+        if game_over:
+
+            texto_game_over = fuente_game_over.render(
+                "GAME OVER",
+                True,
+                (255, 255, 255)
+            )
+
+            ventana.blit(
+                texto_game_over,
+                (
+                    ANCHO // 2 - texto_game_over.get_width() // 2,
+                    220
+                )
+            )
+
+            texto_reinicio = fuente_reinicio.render(
+                "ESPACIO PARA REINICIAR",
+                True,
+                (255, 255, 255)
+            )
+
+            ventana.blit(
+                texto_reinicio,
+                (
+                    ANCHO // 2 - texto_reinicio.get_width() // 2,
+                    300
+                )
+            )
+
+            texto_salir = fuente_reinicio.render(
+    "ESC PARA VOLVER",
+    True,
+    (255, 255, 255)
+)
+
+            ventana.blit(
+                texto_salir,
+                (
+                    ANCHO // 2 - texto_salir.get_width() // 2,
+                    340
+                )
+            )
+
+        # =====================================================
+        # ACTUALIZAR PANTALLA
+        # =====================================================
+
+        pygame.display.flip()
+
+        reloj.tick(60)
+
+    # Volvemos al nombre de la ventana principal
+    pygame.display.set_caption("PAU")
 
 
-pygame.quit()
+if __name__ == "__main__":
+    ejecutar_flappy()
