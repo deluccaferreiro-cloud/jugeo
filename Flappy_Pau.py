@@ -108,10 +108,10 @@ while jugando:
 
         
         pau_rect = pygame.Rect(
-            x_pau,
-            y_pau,
-            ancho_pau,
-            alto_pau
+            x_pau + 15,
+            y_pau + 15,
+            ancho_pau - 30,
+            alto_pau- 30
         )
 
         
