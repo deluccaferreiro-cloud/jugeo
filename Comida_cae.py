@@ -1,15 +1,14 @@
 import pygame
 import random, os
 
-jugando=True
-game_over=False
-
 def encontrar_archivo(nombre):
     carpeta_raiz=os.path.dirname(__file__)
     archivo=os.path.join(carpeta_raiz, "assets", "minijuegos", "comidaquecae", nombre)
     return archivo
 
 pygame.init()
+jugando=True
+game_over=False
 
 ANCHO=800
 ALTO=500
