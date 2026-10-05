@@ -7,6 +7,11 @@ def encontrar_archivo(nombre):
     carpeta_raiz = os.path.dirname(__file__)
     archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "comidaquecae", nombre)
     return archivo
+<<<<<<< Updated upstream
+=======
+
+pygame.init()
+>>>>>>> Stashed changes
 
 pygame.init()
 ANCHO=800
