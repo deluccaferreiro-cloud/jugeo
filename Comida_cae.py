@@ -7,6 +7,7 @@ def encontrar_archivo(nombre):
     return archivo
 
 pygame.init()
+
 jugando=True
 game_over=False
 
