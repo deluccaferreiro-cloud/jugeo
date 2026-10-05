@@ -8,6 +8,7 @@ def encontrar_archivo(nombre):
     carpeta_raiz=os.path.dirname(__file__)
     archivo=os.path.join(carpeta_raiz, "assets", "minijuegos", "comidaquecae", nombre)
     return archivo
+
 pygame.init()
 
 ANCHO=800
