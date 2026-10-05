@@ -33,13 +33,13 @@ y_pau=400
 ancho_pau=100
 alto_pau=100
 
-velocidad_pau=7
+velocidad_pau=10
 
 vidas_pau=3
 
 comida_lista=[]
 
-velocidad_comida=5
+velocidad_comida=6
 
 contador_comida=0
 
