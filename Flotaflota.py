@@ -19,7 +19,7 @@ reloj=pygame.time.Clock()
 
 fondo=pygame.image.load(encontrar_archivo("flotaflota.png"))
 pau=pygame.image.load(encontrar_archivo("pauflotaflota.png"))
-pau=pygame.transform.scale(pau, (100, 100))
+pau=pygame.transform.scale(pau,(100, 100))
 
 x_pau=100
 y_pau=350
@@ -40,3 +40,16 @@ flota_flota_list.append(pygame.Rect(450, 430, 180, 25))
 flota_flota_list.append(pygame.Rect(650, 430, 180, 25))
 
 en_flota=False
+
+puntos=0
+contador_puntaje_salto=0 
+
+while jugando:
+    reloj.tick(60)
+    for evento in pygame.event.get():
+        if evento.type==pygame.QUIT:
+            jugando=False
+            
+        if evento.type==pygame.KEYDOWN:
+            if evento.key == pygame.K_SPACE and flota_flota_list:
+                
