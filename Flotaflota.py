@@ -25,13 +25,13 @@ fondo = pygame.image.load(encontrar_archivo("flotaflota.png"))
 fondo = pygame.transform.scale(fondo, (ANCHO, ALTO))
 
 pau = pygame.image.load(encontrar_archivo("pauflotaflota.png"))
-pau = pygame.transform.scale(pau, (80, 80))
+pau = pygame.transform.scale(pau, (100, 100))
 
-flota_flota_imagen = pygame.image.load(encontrar_archivo("ob_flota.png"))
+flota_flota_imagen = pygame.image.load(encontrar_archivo("flotaflotarewow.png"))
 flota_flota_imagen = pygame.transform.scale(flota_flota_imagen, (100, 100))
 
 x_pau = 100
-y_pau = 340
+y_pau = 350
 
 velocidad_y = 0
 gravedad = 0.6
@@ -41,7 +41,7 @@ saltando = False
 
 flota_flota_list = []
 
-flota_inicial = pygame.Rect(100, 420, 130, 40)
+flota_inicial = pygame.Rect(100, 430, 130, 40)
 flota_flota_list.append(flota_inicial)
 
 for i in range(1, 8):
@@ -51,8 +51,7 @@ for i in range(1, 8):
     distancia = random.randint(80, 190)
 
     x = anterior.right + distancia
-
-    y = random.randint(300, 420)
+    y = 430
 
     nueva_flota = pygame.Rect(x, y, 130, 40)
 
@@ -113,21 +112,18 @@ while jugando:
             if evento.key == pygame.K_r and game_over:
 
                 x_pau = 100
-                y_pau = 340
+                y_pau = 350
 
                 velocidad_y = 0
-
                 saltando = False
 
                 puntos = 0
-
                 flota_actual = 0
-
                 camara_x = 0
 
                 flota_flota_list = []
 
-                flota_inicial = pygame.Rect(100, 420, 130, 40)
+                flota_inicial = pygame.Rect(100, 430, 130, 40)
                 flota_flota_list.append(flota_inicial)
 
                 for i in range(1, 8):
@@ -137,8 +133,7 @@ while jugando:
                     distancia = random.randint(80, 190)
 
                     x = anterior.right + distancia
-
-                    y = random.randint(300, 420)
+                    y = 430
 
                     nueva_flota = pygame.Rect(
                         x,
@@ -180,7 +175,6 @@ while jugando:
                         y_pau = flotaflota.top - 80
 
                         velocidad_y = 0
-
                         saltando = False
 
         if x_pau > camara_x + 400:
@@ -194,8 +188,7 @@ while jugando:
             distancia = random.randint(80, 190)
 
             x = anterior.right + distancia
-
-            y = random.randint(280, 420)
+            y = 430
 
             nueva_flota = pygame.Rect(
                 x,
