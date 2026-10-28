@@ -8,15 +8,23 @@ def encontrar_archivo(nombre):
     return archivo
 
 def crear_plataforma(anterior):
-    y = anterior.y - random.randint(105, 140)
-    desplazamiento = random.randint(100, 190)
+    y = anterior.y - random.randint(85, 110)
+    desplazamiento = random.randint(120, 210)
 
-    if anterior.x < ANCHO // 2:
-        x = anterior.x + desplazamiento
+    if anterior.centerx < ANCHO // 2:
+        direccion = random.choice([-1, 1, 1])
     else:
-        x = anterior.x - desplazamiento
+        direccion = random.choice([-1, -1, 1])
 
-    x = max(0, min(x, ANCHO - ANCHO_PLATAFORMA))
+    x = anterior.x + desplazamiento * direccion
+
+    x = max(15, min(x, ANCHO - ANCHO_PLATAFORMA - 15))
+
+    if abs(x - anterior.x) < 80:
+        if anterior.centerx < ANCHO // 2:
+            x = min(ANCHO - ANCHO_PLATAFORMA - 15, anterior.x + desplazamiento)
+        else:
+            x = max(15, anterior.x - desplazamiento)
 
     return pygame.Rect(
         x,
@@ -39,7 +47,7 @@ def obtener_zona(puntos):
 
 def tiempo_juego():
     tiempo_transcurrido = (pygame.time.get_ticks() - tiempo_inicio) // 1000
-    tiempo_restante = max(0, 60 - tiempo_transcurrido)
+    tiempo_restante = max(0, DURACION_JUEGO - tiempo_transcurrido)
     return tiempo_restante
 
 pygame.init()
@@ -50,13 +58,13 @@ game_over = False
 ANCHO = 800
 ALTO = 500
 
+DURACION_JUEGO = 60
+tiempo_inicio = pygame.time.get_ticks()
+
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("SaltoPAUUU")
 
 reloj = pygame.time.Clock()
-
-DURACION_JUEGO = 60
-tiempo_inicio = pygame.time.get_ticks()
 
 fondos = [
     pygame.transform.scale(
