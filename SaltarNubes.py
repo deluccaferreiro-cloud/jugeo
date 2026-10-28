@@ -130,7 +130,7 @@ nube_peligrosa = pygame.image.load(
 
 nube_peligrosa = pygame.transform.scale(
     nube_peligrosa,
-    (85, 55)
+    (100, 100)
 )
 
 ANCHO_PAU = 55
