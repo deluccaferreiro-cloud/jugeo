@@ -17,7 +17,6 @@ def crear_plataforma(anterior):
         direccion = random.choice([-1, -1, 1])
 
     x = anterior.x + desplazamiento * direccion
-
     x = max(15, min(x, ANCHO - ANCHO_PLATAFORMA - 15))
 
     if abs(x - anterior.x) < 80:
@@ -26,12 +25,7 @@ def crear_plataforma(anterior):
         else:
             x = max(15, anterior.x - desplazamiento)
 
-    return pygame.Rect(
-        x,
-        y,
-        ANCHO_PLATAFORMA,
-        ALTO_PLATAFORMA
-    )
+    return pygame.Rect(x, y, ANCHO_PLATAFORMA, ALTO_PLATAFORMA)
 
 def obtener_zona(puntos):
     if puntos < 50:
@@ -68,33 +62,23 @@ reloj = pygame.time.Clock()
 
 fondos = [
     pygame.transform.scale(
-        pygame.image.load(
-            encontrar_archivo("resubdelsuelo.png")
-        ).convert(),
+        pygame.image.load(encontrar_archivo("resubdelsuelo.png")).convert(),
         (ANCHO, ALTO)
     ),
     pygame.transform.scale(
-        pygame.image.load(
-            encontrar_archivo("salto.png")
-        ).convert(),
+        pygame.image.load(encontrar_archivo("salto.png")).convert(),
         (ANCHO, ALTO)
     ),
     pygame.transform.scale(
-        pygame.image.load(
-            encontrar_archivo("salto.png")
-        ).convert(),
+        pygame.image.load(encontrar_archivo("salto.png")).convert(),
         (ANCHO, ALTO)
     ),
     pygame.transform.scale(
-        pygame.image.load(
-            encontrar_archivo("spacebar.jpg")
-        ).convert(),
+        pygame.image.load(encontrar_archivo("spacebar.jpg")).convert(),
         (ANCHO, ALTO)
     ),
     pygame.transform.scale(
-        pygame.image.load(
-            encontrar_archivo("paraisopau.jpg")
-        ).convert(),
+        pygame.image.load(encontrar_archivo("paraisopau.jpg")).convert(),
         (ANCHO, ALTO)
     )
 ]
@@ -106,17 +90,9 @@ pau = pygame.image.load(
 pau = pygame.transform.scale(pau, (55, 55))
 
 plataformas_imagenes = [
-    pygame.image.load(
-        encontrar_archivo("piedraplat.png")
-    ).convert_alpha(),
-
-    pygame.image.load(
-        encontrar_archivo("plataforma.png")
-    ).convert_alpha(),
-
-    pygame.image.load(
-        encontrar_archivo("nubepau.png")
-    ).convert_alpha()
+    pygame.image.load(encontrar_archivo("piedraplat.png")).convert_alpha(),
+    pygame.image.load(encontrar_archivo("plataforma.png")).convert_alpha(),
+    pygame.image.load(encontrar_archivo("nubepau.png")).convert_alpha()
 ]
 
 plataformas_imagenes = [
@@ -128,10 +104,7 @@ nube_peligrosa = pygame.image.load(
     encontrar_archivo("nube_peligrosa.png")
 ).convert_alpha()
 
-nube_peligrosa = pygame.transform.scale(
-    nube_peligrosa,
-    (100, 100)
-)
+nube_peligrosa = pygame.transform.scale(nube_peligrosa, (100, 100))
 
 ANCHO_PAU = 55
 ALTO_PAU = 55
@@ -143,13 +116,16 @@ MARGEN_SUPERIOR_PLAT = 35
 MARGEN_LATERAL_PLAT = 15
 MARGEN_PIES_PAU = 8
 
+ANCHO_BARRA = 220
+ALTO_BARRA = 20
+
 x_pau = ANCHO // 2
 y_pau = ALTO - 150
 
 velocidad_x = 0
 velocidad_y = 0
 gravedad = 0.4
-salto = -15
+salto = -14
 
 plataformas = []
 nubes_peligrosas = []
@@ -173,6 +149,7 @@ zona_anterior = 0
 
 fuente = pygame.font.Font(None, 35)
 fuente_grande = pygame.font.Font(None, 60)
+fuente_barra = pygame.font.Font(None, 26)
 
 while jugando:
 
@@ -232,9 +209,7 @@ while jugando:
                 plataformas.append(plataforma_inicial)
 
                 for i in range(8):
-                    nueva_plataforma = crear_plataforma(
-                        plataformas[-1]
-                    )
+                    nueva_plataforma = crear_plataforma(plataformas[-1])
                     plataformas.append(nueva_plataforma)
 
                 nubes_peligrosas = []
@@ -272,27 +247,14 @@ while jugando:
 
         if velocidad_y > 0:
 
-            pies_anterior = (
-                y_anterior + ALTO_PAU - MARGEN_PIES_PAU
-            )
-
-            pies_actual = (
-                y_pau + ALTO_PAU - MARGEN_PIES_PAU
-            )
+            pies_anterior = y_anterior + ALTO_PAU - MARGEN_PIES_PAU
+            pies_actual = y_pau + ALTO_PAU - MARGEN_PIES_PAU
 
             for plataforma in plataformas:
 
-                superficie = (
-                    plataforma.top + MARGEN_SUPERIOR_PLAT
-                )
-
-                izquierda = (
-                    plataforma.left + MARGEN_LATERAL_PLAT
-                )
-
-                derecha = (
-                    plataforma.right - MARGEN_LATERAL_PLAT
-                )
+                superficie = plataforma.top + MARGEN_SUPERIOR_PLAT
+                izquierda = plataforma.left + MARGEN_LATERAL_PLAT
+                derecha = plataforma.right - MARGEN_LATERAL_PLAT
 
                 if (
                     pies_anterior <= superficie
@@ -301,11 +263,7 @@ while jugando:
                     and rect_pau.left < derecha
                 ):
 
-                    y_pau = (
-                        superficie - ALTO_PAU
-                        + MARGEN_PIES_PAU
-                    )
-
+                    y_pau = superficie - ALTO_PAU + MARGEN_PIES_PAU
                     velocidad_y = salto
                     puntos += 1
                     break
@@ -322,50 +280,32 @@ while jugando:
                 nube.y += diferencia
 
         plataformas = [
-            plataforma
-            for plataforma in plataformas
+            plataforma for plataforma in plataformas
             if plataforma.y < ALTO + 100
         ]
 
         nubes_peligrosas = [
-            nube
-            for nube in nubes_peligrosas
+            nube for nube in nubes_peligrosas
             if nube.y < ALTO + 100
         ]
 
         while plataformas and plataformas[-1].y > -100:
 
-            nueva_plataforma = crear_plataforma(
-                plataformas[-1]
-            )
-
+            nueva_plataforma = crear_plataforma(plataformas[-1])
             plataformas.append(nueva_plataforma)
 
             if zona == 1 and random.random() < 0.65:
 
-                x_nube = random.randint(
-                    0,
-                    ANCHO - 85
-                )
-
-                y_nube = nueva_plataforma.y + random.randint(
-                    35,
-                    100
-                )
+                x_nube = random.randint(0, ANCHO - 85)
+                y_nube = nueva_plataforma.y + random.randint(35, 100)
 
                 nubes_peligrosas.append(
-                    pygame.Rect(
-                        x_nube,
-                        y_nube,
-                        85,
-                        55
-                    )
+                    pygame.Rect(x_nube, y_nube, 85, 55)
                 )
 
         if zona == 1:
 
             for nube in nubes_peligrosas:
-
                 if rect_pau.colliderect(nube):
                     game_over = True
                     break
@@ -388,46 +328,71 @@ while jugando:
         imagen_plataforma = plataformas_imagenes[2]
 
     for plataforma in plataformas:
-
-        ventana.blit(
-            imagen_plataforma,
-            (plataforma.x, plataforma.y)
-        )
+        ventana.blit(imagen_plataforma, (plataforma.x, plataforma.y))
 
     if zona == 1:
-
         for nube in nubes_peligrosas:
-
-            ventana.blit(
-                nube_peligrosa,
-                (nube.x, nube.y)
-            )
+            ventana.blit(nube_peligrosa, (nube.x, nube.y))
 
     ventana.blit(pau, (x_pau, y_pau))
 
     texto_puntos = fuente.render(
-        "Puntos: " + str(puntos),
-        True,
-        (255, 255, 255)
+        "Puntos: " + str(puntos), True, (255, 255, 255)
     )
-
     ventana.blit(texto_puntos, (20, 20))
 
     texto_record = fuente.render(
-        "Record: " + str(record),
-        True,
-        (255, 255, 255)
+        "Record: " + str(record), True, (255, 255, 255)
     )
-
     ventana.blit(texto_record, (20, 55))
 
-    texto_tiempo = fuente.render(
-        "Tiempo: " + str(tiempo_restante),
+    texto_tiempo = fuente_barra.render(
+        "Tiempo: " + str(tiempo_restante) + " s",
         True,
         (255, 255, 255)
     )
 
-    ventana.blit(texto_tiempo, (20, 90))
+    barra_x = ANCHO - ANCHO_BARRA - 20
+    barra_y = 55
+
+    ventana.blit(
+        texto_tiempo,
+        (barra_x, 20)
+    )
+
+    pygame.draw.rect(
+        ventana,
+        (45, 45, 45),
+        (barra_x, barra_y, ANCHO_BARRA, ALTO_BARRA),
+        border_radius=8
+    )
+
+    ancho_actual = int(
+        ANCHO_BARRA * tiempo_restante / DURACION_JUEGO
+    )
+
+    if tiempo_restante > 30:
+        color_barra = (40, 210, 80)
+    elif tiempo_restante > 10:
+        color_barra = (255, 200, 40)
+    else:
+        color_barra = (230, 50, 50)
+
+    if ancho_actual > 0:
+        pygame.draw.rect(
+            ventana,
+            color_barra,
+            (barra_x, barra_y, ancho_actual, ALTO_BARRA),
+            border_radius=8
+        )
+
+    pygame.draw.rect(
+        ventana,
+        (255, 255, 255),
+        (barra_x, barra_y, ANCHO_BARRA, ALTO_BARRA),
+        2,
+        border_radius=8
+    )
 
     nombres_zonas = [
         "Subsuelo",
@@ -438,24 +403,19 @@ while jugando:
     ]
 
     texto_zona = fuente.render(
-        nombres_zonas[zona],
-        True,
-        (255, 255, 255)
+        nombres_zonas[zona], True, (255, 255, 255)
     )
 
     ventana.blit(
         texto_zona,
-        (ANCHO - texto_zona.get_width() - 20, 20)
+        (ANCHO - texto_zona.get_width() - 20, 90)
     )
 
     if game_over:
 
         texto = fuente_grande.render(
-            "GAME OVER",
-            True,
-            (255, 255, 255)
+            "GAME OVER", True, (255, 255, 255)
         )
-
         ventana.blit(texto, (270, 190))
 
         texto2 = fuente.render(
@@ -463,7 +423,6 @@ while jugando:
             True,
             (255, 255, 255)
         )
-
         ventana.blit(texto2, (230, 260))
 
     pygame.display.update()
