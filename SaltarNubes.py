@@ -1,21 +1,17 @@
-
 import pygame
 import os
 import random
+import math
 
 def encontrar_archivo(nombre):
     carpeta_raiz = os.path.dirname(__file__)
-    archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "salto_nubes", nombre)
-    return archivo
+    return os.path.join(carpeta_raiz, "assets", "minijuegos", "salto_nubes", nombre)
 
 def crear_plataforma(anterior):
-    y = anterior.y - random.randint(100, 125)
-    desplazamiento = random.randint(140, 230)
+    y = anterior.y - random.randint(85, 110)
+    desplazamiento = random.randint(90, 160)
 
-    if anterior.centerx < ANCHO // 2:
-        direccion = random.choice([-1, 1, 1])
-    else:
-        direccion = random.choice([-1, -1, 1])
+    direccion = random.choice([-1, 1])
 
     x = anterior.x + desplazamiento * direccion
     x = max(15, min(x, ANCHO - ANCHO_PLATAFORMA - 15))
@@ -31,26 +27,48 @@ def obtener_zona(puntos):
         return 2
     elif puntos < 500:
         return 3
-    else:
-        return 4
+    return 4
 
 def tiempo_juego():
-    tiempo_transcurrido = (pygame.time.get_ticks() - tiempo_inicio) // 1000
-    return max(0, DURACION_JUEGO - tiempo_transcurrido)
+    transcurrido = (pygame.time.get_ticks() - tiempo_inicio) // 1000
+    return max(0, DURACION_JUEGO + tiempo_extra - transcurrido)
+
+def crear_objeto(plataforma):
+    tipo = random.choice([
+        "moneda", "moneda", "moneda",
+        "reloj", "resorte", "paraguas", "iman"
+    ])
+
+    x = random.randint(
+        plataforma.left + 10,
+        plataforma.right - 42
+    )
+
+    y = plataforma.top + MARGEN_SUPERIOR_PLAT - 32
+
+    return {
+        "tipo": tipo,
+        "rect": pygame.Rect(x, y, 32, 32),
+        "activo": True
+    }
 
 pygame.init()
 
 ANCHO = 800
 ALTO = 500
-
 DURACION_JUEGO = 60
-pantalla_actual = "instrucciones"
-tiempo_inicio = 0
 
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("SaltoPAUUU")
 
 reloj = pygame.time.Clock()
+
+pantalla_actual = "instrucciones"
+jugando = True
+game_over = False
+
+tiempo_inicio = 0
+tiempo_extra = 0
 
 fondos = [
     pygame.transform.scale(
@@ -101,6 +119,17 @@ nube_peligrosa = pygame.image.load(
 ).convert_alpha()
 nube_peligrosa = pygame.transform.scale(nube_peligrosa, (100, 100))
 
+imagenes_objetos = {}
+
+for nombre in ["reloj", "resorte", "moneda", "paraguas", "iman"]:
+    imagen = pygame.image.load(
+        encontrar_archivo(nombre + ".png")
+    ).convert_alpha()
+
+    imagenes_objetos[nombre] = pygame.transform.scale(
+        imagen, (32, 32)
+    )
+
 ANCHO_PAU = 55
 ALTO_PAU = 55
 
@@ -122,37 +151,69 @@ boton_jugar = pygame.Rect(300, 390, 200, 60)
 color_boton = (80, 190, 100)
 color_boton_hover = (50, 160, 75)
 
-x_pau = ANCHO // 2
-y_pau = ALTO - 150
+gravedad_normal = 0.45
+gravedad = gravedad_normal
+salto = -13
 
-velocidad_x = 0
-velocidad_y = 0
-gravedad = 0.4
-salto = -14
+DURACION_PARAGUAS = 5000
+DURACION_IMAN = 6000
 
-plataformas = [
-    pygame.Rect(
-        ANCHO // 2 - 50,
-        ALTO - 70,
-        ANCHO_PLATAFORMA,
-        ALTO_PLATAFORMA
-    )
-]
+tiempo_paraguas = 0
+tiempo_iman = 0
 
-for i in range(8):
-    plataformas.append(crear_plataforma(plataformas[-1]))
-
-nubes_peligrosas = []
-
-puntos = 0
 record = 0
-zona_anterior = 0
 
-jugando = True
-game_over = False
+def reiniciar_juego():
+    global x_pau, y_pau, velocidad_x, velocidad_y
+    global puntos, zona_anterior, tiempo_inicio, tiempo_extra
+    global plataformas, nubes_peligrosas, objetos
+    global velocidades_plataformas, game_over
+    global gravedad, tiempo_paraguas, tiempo_iman
+
+    x_pau = ANCHO // 2
+    y_pau = ALTO - 150
+
+    velocidad_x = 0
+    velocidad_y = 0
+
+    gravedad = gravedad_normal
+    tiempo_paraguas = 0
+    tiempo_iman = 0
+
+    puntos = 0
+    zona_anterior = 0
+
+    tiempo_extra = 0
+    tiempo_inicio = pygame.time.get_ticks()
+
+    plataformas = [
+        pygame.Rect(
+            ANCHO // 2 - 50,
+            ALTO - 70,
+            ANCHO_PLATAFORMA,
+            ALTO_PLATAFORMA
+        )
+    ]
+
+    velocidades_plataformas = {}
+    objetos = []
+    nubes_peligrosas = []
+
+    for i in range(8):
+        nueva = crear_plataforma(plataformas[-1])
+        plataformas.append(nueva)
+
+        if random.random() < 0.25:
+            velocidades_plataformas[id(nueva)] = random.choice([-2, 2])
+
+        if random.random() < 0.35:
+            objetos.append(crear_objeto(nueva))
+
+    game_over = False
+
+reiniciar_juego()
 
 while jugando:
-
     reloj.tick(60)
 
     if pantalla_actual == "juego" and not game_over:
@@ -173,8 +234,8 @@ while jugando:
         if evento.type == pygame.MOUSEBUTTONDOWN:
             if evento.button == 1 and pantalla_actual == "instrucciones":
                 if boton_jugar.collidepoint(evento.pos):
+                    reiniciar_juego()
                     pantalla_actual = "juego"
-                    tiempo_inicio = pygame.time.get_ticks()
 
         if evento.type == pygame.KEYDOWN:
 
@@ -187,30 +248,8 @@ while jugando:
                     velocidad_x = 5
 
             if evento.key == pygame.K_r and game_over:
-
-                x_pau = ANCHO // 2
-                y_pau = ALTO - 150
-
-                velocidad_x = 0
-                velocidad_y = 0
-                puntos = 0
-                zona_anterior = 0
-                tiempo_inicio = pygame.time.get_ticks()
-
-                plataformas = [
-                    pygame.Rect(
-                        ANCHO // 2 - 50,
-                        ALTO - 70,
-                        ANCHO_PLATAFORMA,
-                        ALTO_PLATAFORMA
-                    )
-                ]
-
-                for i in range(8):
-                    plataformas.append(crear_plataforma(plataformas[-1]))
-
-                nubes_peligrosas = []
-                game_over = False
+                reiniciar_juego()
+                pantalla_actual = "juego"
 
         if evento.type == pygame.KEYUP:
 
@@ -227,27 +266,27 @@ while jugando:
         titulo = fuente_grande.render(
             "SKY PAU", True, (255, 255, 255)
         )
-
         ventana.blit(
             titulo,
             (ANCHO // 2 - titulo.get_width() // 2, 35)
         )
 
         instrucciones = [
-        "OBJETIVO: Hacer que PAU salte de plataforma en plataforma",
-        "evitando que se muera. Para mover",
-        "a PAU utiliza las flechas tanto izquierda como derecha.",
-        "TIP: Agarra los objetos que aparecen en las plataformas!"
+            "OBJETIVO: Saltar de plataforma en plataforma.",
+            "Usa las flechas izquierda y derecha para moverte.",
+            "Algunas plataformas se mueven.",
+            "Reloj: mas tiempo. Resorte: salto alto.",
+            "Paraguas: caida lenta. Monedas: ganas puntos.",
+            "Iman: atrae monedas cercanas."
         ]
 
         for i, linea in enumerate(instrucciones):
             texto = fuente.render(
                 linea, True, (255, 255, 255)
             )
-
             ventana.blit(
                 texto,
-                (ANCHO // 2 - texto.get_width() // 2, 115 + i * 48)
+                (ANCHO // 2 - texto.get_width() // 2, 115 + i * 42)
             )
 
         if boton_jugar.collidepoint(pygame.mouse.get_pos()):
@@ -256,16 +295,12 @@ while jugando:
             color_actual = color_boton
 
         pygame.draw.rect(
-            ventana,
-            color_actual,
-            boton_jugar,
-            border_radius=12
+            ventana, color_actual, boton_jugar, border_radius=12
         )
 
         texto_boton = fuente.render(
             "JUGAR", True, (255, 255, 255)
         )
-
         ventana.blit(
             texto_boton,
             (
@@ -298,6 +333,22 @@ while jugando:
             ALTO_PAU - 20
         )
 
+        for plataforma in plataformas:
+            velocidad_plataforma = velocidades_plataformas.get(
+                id(plataforma), 0
+            )
+
+            if velocidad_plataforma != 0:
+                plataforma.x += velocidad_plataforma
+
+                if plataforma.left <= 0:
+                    plataforma.left = 0
+                    velocidades_plataformas[id(plataforma)] *= -1
+
+                if plataforma.right >= ANCHO:
+                    plataforma.right = ANCHO
+                    velocidades_plataformas[id(plataforma)] *= -1
+
         if velocidad_y > 0:
 
             pies_anterior = y_anterior + ALTO_PAU - MARGEN_PIES_PAU
@@ -315,7 +366,6 @@ while jugando:
                     and rect_pau.right > izquierda
                     and rect_pau.left < derecha
                 ):
-
                     y_pau = superficie - ALTO_PAU + MARGEN_PIES_PAU
                     velocidad_y = salto
                     puntos += 1
@@ -332,14 +382,28 @@ while jugando:
             for nube in nubes_peligrosas:
                 nube.y += diferencia
 
+            for objeto in objetos:
+                objeto["rect"].y += diferencia
+
         plataformas = [
             plataforma for plataforma in plataformas
             if plataforma.y < ALTO + 100
         ]
 
+        velocidades_plataformas = {
+            id(plataforma): velocidades_plataformas[id(plataforma)]
+            for plataforma in plataformas
+            if id(plataforma) in velocidades_plataformas
+        }
+
         nubes_peligrosas = [
             nube for nube in nubes_peligrosas
             if nube.y < ALTO + 100
+        ]
+
+        objetos = [
+            objeto for objeto in objetos
+            if objeto["rect"].y < ALTO + 100
         ]
 
         while plataformas and plataformas[-1].y > -100:
@@ -347,18 +411,68 @@ while jugando:
             nueva_plataforma = crear_plataforma(plataformas[-1])
             plataformas.append(nueva_plataforma)
 
-            if obtener_zona(puntos) == 1 and random.random() < 0.90:
+            if random.random() < 0.25:
+                velocidades_plataformas[id(nueva_plataforma)] = random.choice([-2, 2])
 
+            if random.random() < 0.35:
+                objetos.append(crear_objeto(nueva_plataforma))
+
+            if obtener_zona(puntos) == 1 and random.random() < 0.90:
                 x_nube = random.randint(0, ANCHO - 85)
                 y_nube = nueva_plataforma.y + random.randint(35, 100)
-
                 nubes_peligrosas.append(
                     pygame.Rect(x_nube, y_nube, 85, 55)
                 )
 
-        zona = obtener_zona(puntos)
+        ahora = pygame.time.get_ticks()
 
-        if zona == 1:
+        if ahora > tiempo_paraguas:
+            gravedad = gravedad_normal
+        else:
+            gravedad = gravedad_normal * 0.45
+
+        if ahora > tiempo_iman:
+            iman_activo = False
+        else:
+            iman_activo = True
+
+        for objeto in objetos[:]:
+
+            rect_objeto = objeto["rect"]
+
+            if objeto["tipo"] == "moneda" and iman_activo:
+                dx = x_pau + ANCHO_PAU // 2 - rect_objeto.centerx
+                dy = y_pau + ALTO_PAU // 2 - rect_objeto.centery
+                distancia = math.hypot(dx, dy)
+
+                if 0 < distancia < 220:
+                    rect_objeto.x += int(dx / distancia * 4)
+                    rect_objeto.y += int(dy / distancia * 4)
+
+            if rect_pau.colliderect(rect_objeto):
+
+                tipo = objeto["tipo"]
+
+                if tipo == "moneda":
+                    puntos += 1
+
+                elif tipo == "reloj":
+                    tiempo_extra += 5
+
+                elif tipo == "resorte":
+                    velocidad_y = -20
+
+                elif tipo == "paraguas":
+                    tiempo_paraguas = ahora + DURACION_PARAGUAS
+                    gravedad = gravedad_normal * 0.45
+
+                elif tipo == "iman":
+                    tiempo_iman = ahora + DURACION_IMAN
+                    iman_activo = True
+
+                objetos.remove(objeto)
+
+        if obtener_zona(puntos) == 1:
             for nube in nubes_peligrosas:
                 if rect_pau.colliderect(nube):
                     game_over = True
@@ -371,7 +485,6 @@ while jugando:
             record = puntos
 
     zona = obtener_zona(puntos)
-
     ventana.blit(fondos[zona], (0, 0))
 
     if zona == 0:
@@ -388,6 +501,13 @@ while jugando:
         for nube in nubes_peligrosas:
             ventana.blit(nube_peligrosa, nube)
 
+    for objeto in objetos:
+        tipo = objeto["tipo"]
+        rect_objeto = objeto["rect"]
+
+        if tipo in imagenes_objetos:
+            ventana.blit(imagenes_objetos[tipo], rect_objeto)
+
     ventana.blit(pau, (x_pau, y_pau))
 
     texto_puntos = fuente.render(
@@ -402,8 +522,7 @@ while jugando:
 
     texto_tiempo = fuente_barra.render(
         "Tiempo: " + str(tiempo_restante) + " s",
-        True,
-        (255, 255, 255)
+        True, (255, 255, 255)
     )
 
     barra_x = ANCHO - ANCHO_BARRA - 20
@@ -412,8 +531,7 @@ while jugando:
     ventana.blit(texto_tiempo, (barra_x, 20))
 
     pygame.draw.rect(
-        ventana,
-        (45, 45, 45),
+        ventana, (45, 45, 45),
         (barra_x, barra_y, ANCHO_BARRA, ALTO_BARRA),
         border_radius=8
     )
@@ -421,6 +539,7 @@ while jugando:
     ancho_actual = int(
         ANCHO_BARRA * tiempo_restante / DURACION_JUEGO
     )
+    ancho_actual = max(0, min(ANCHO_BARRA, ancho_actual))
 
     if tiempo_restante > 30:
         color_barra = (40, 210, 80)
@@ -431,18 +550,15 @@ while jugando:
 
     if ancho_actual > 0:
         pygame.draw.rect(
-            ventana,
-            color_barra,
+            ventana, color_barra,
             (barra_x, barra_y, ancho_actual, ALTO_BARRA),
             border_radius=8
         )
 
     pygame.draw.rect(
-        ventana,
-        (255, 255, 255),
+        ventana, (255, 255, 255),
         (barra_x, barra_y, ANCHO_BARRA, ALTO_BARRA),
-        2,
-        border_radius=8
+        2, border_radius=8
     )
 
     nombres_zonas = [
@@ -456,11 +572,22 @@ while jugando:
     texto_zona = fuente.render(
         nombres_zonas[zona], True, (255, 255, 255)
     )
-
     ventana.blit(
         texto_zona,
         (ANCHO - texto_zona.get_width() - 20, 90)
     )
+
+    if tiempo_paraguas > pygame.time.get_ticks():
+        texto_efecto = fuente.render(
+            "Paraguas activo", True, (255, 255, 255)
+        )
+        ventana.blit(texto_efecto, (ANCHO - 230, 125))
+
+    if tiempo_iman > pygame.time.get_ticks():
+        texto_efecto = fuente.render(
+            "Iman activo", True, (255, 255, 255)
+        )
+        ventana.blit(texto_efecto, (ANCHO - 230, 160))
 
     if game_over:
 
@@ -474,8 +601,7 @@ while jugando:
 
         texto2 = fuente.render(
             "Presiona R para volver a jugar",
-            True,
-            (255, 255, 255)
+            True, (255, 255, 255)
         )
         ventana.blit(
             texto2,
