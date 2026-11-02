@@ -1,3 +1,5 @@
+
+
 import pygame
 import os
 import random
@@ -10,12 +12,9 @@ def encontrar_archivo(nombre):
 def crear_plataforma(anterior):
     y = anterior.y - random.randint(85, 110)
     desplazamiento = random.randint(90, 160)
-
     direccion = random.choice([-1, 1])
-
     x = anterior.x + desplazamiento * direccion
     x = max(15, min(x, ANCHO - ANCHO_PLATAFORMA - 15))
-
     return pygame.Rect(x, y, ANCHO_PLATAFORMA, ALTO_PLATAFORMA)
 
 def obtener_zona(puntos):
@@ -39,17 +38,35 @@ def crear_objeto(plataforma):
         "reloj", "resorte", "paraguas", "iman"
     ])
 
-    x = random.randint(
-        plataforma.left + 10,
-        plataforma.right - 42
-    )
-
+    x = random.randint(plataforma.left + 10, plataforma.right - 42)
     y = plataforma.top + MARGEN_SUPERIOR_PLAT - 32
 
     return {
         "tipo": tipo,
         "rect": pygame.Rect(x, y, 32, 32),
-        "activo": True
+        "activo": True,
+        "plataforma": plataforma
+    }
+
+def crear_nube_plataforma(y=None):
+    x = random.randint(0, ANCHO - ANCHO_NUBE)
+
+    if y is None:
+        y = plataformas[-1].y - random.randint(80, 115)
+
+    return pygame.Rect(x, y, ANCHO_NUBE, ALTO_NUBE)
+
+def crear_avion(y):
+    direccion = random.choice([-1, 1])
+
+    if direccion == 1:
+        x = -ANCHO_AVION
+    else:
+        x = ANCHO
+
+    return {
+        "rect": pygame.Rect(x, y, ANCHO_AVION, ALTO_AVION),
+        "velocidad": direccion * random.randint(3, 5)
     }
 
 pygame.init()
@@ -60,7 +77,6 @@ DURACION_JUEGO = 60
 
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("SaltoPAUUU")
-
 reloj = pygame.time.Clock()
 
 pantalla_actual = "instrucciones"
@@ -114,10 +130,22 @@ plataformas_imagenes = [
     for imagen in plataformas_imagenes
 ]
 
-nube_peligrosa = pygame.image.load(
+nube_imagen = pygame.image.load(
     encontrar_archivo("nube_peligrosa.png")
 ).convert_alpha()
-nube_peligrosa = pygame.transform.scale(nube_peligrosa, (100, 100))
+nube_imagen = pygame.transform.scale(nube_imagen, (100, 60))
+
+ANCHO_NUBE = 100
+ALTO_NUBE = 60
+
+avion_imagen = pygame.image.load(
+    encontrar_archivo("avion.png")
+).convert_alpha()
+ANCHO_AVION = 120
+ALTO_AVION = 65
+avion_imagen = pygame.transform.scale(
+    avion_imagen, (ANCHO_AVION, ALTO_AVION)
+)
 
 imagenes_objetos = {}
 
@@ -126,9 +154,7 @@ for nombre in ["reloj", "resorte", "moneda", "paraguas", "iman"]:
         encontrar_archivo(nombre + ".png")
     ).convert_alpha()
 
-    imagenes_objetos[nombre] = pygame.transform.scale(
-        imagen, (35, 35)
-    )
+    imagenes_objetos[nombre] = pygame.transform.scale(imagen, (35, 35))
 
 ANCHO_PAU = 55
 ALTO_PAU = 55
@@ -166,7 +192,7 @@ record = 0
 def reiniciar_juego():
     global x_pau, y_pau, velocidad_x, velocidad_y
     global puntos, zona_anterior, tiempo_inicio, tiempo_extra
-    global plataformas, nubes_peligrosas, objetos
+    global plataformas, nubes_plataformas, objetos, aviones
     global velocidades_plataformas, game_over
     global gravedad, tiempo_paraguas, tiempo_iman
 
@@ -195,9 +221,10 @@ def reiniciar_juego():
         )
     ]
 
+    nubes_plataformas = []
+    aviones = []
     velocidades_plataformas = {}
     objetos = []
-    nubes_peligrosas = []
 
     for i in range(8):
         nueva = crear_plataforma(plataformas[-1])
@@ -263,13 +290,8 @@ while jugando:
 
         ventana.blit(imagen_instrucciones, (0, 0))
 
-        titulo = fuente_grande.render(
-            "SKY PAU", True, (255, 255, 255)
-        )
-        ventana.blit(
-            titulo,
-            (ANCHO // 2 - titulo.get_width() // 2, 35)
-        )
+        titulo = fuente_grande.render("SKY PAU", True, (255, 255, 255))
+        ventana.blit(titulo, (ANCHO // 2 - titulo.get_width() // 2, 35))
 
         instrucciones = [
             "OBJETIVO: Saltar de plataforma en plataforma.",
@@ -277,30 +299,27 @@ while jugando:
             "Algunas plataformas se mueven.",
             "Reloj: mas tiempo. Resorte: salto alto.",
             "Paraguas: caida lenta. Monedas: ganas puntos.",
-            "Iman: atrae monedas cercanas."
+            "Iman: atrae monedas cercanas.",
+            "Aviones: se mueven y desaparecen.",
+            "Nubes de Superficie: desaparecen al pisarlas."
         ]
 
         for i, linea in enumerate(instrucciones):
-            texto = fuente.render(
-                linea, True, (255, 255, 255)
-            )
+            texto = fuente.render(linea, True, (255, 255, 255))
             ventana.blit(
                 texto,
-                (ANCHO // 2 - texto.get_width() // 2, 115 + i * 42)
+                (ANCHO // 2 - texto.get_width() // 2, 90 + i * 35)
             )
 
-        if boton_jugar.collidepoint(pygame.mouse.get_pos()):
-            color_actual = color_boton_hover
-        else:
-            color_actual = color_boton
-
-        pygame.draw.rect(
-            ventana, color_actual, boton_jugar, border_radius=12
+        color_actual = (
+            color_boton_hover
+            if boton_jugar.collidepoint(pygame.mouse.get_pos())
+            else color_boton
         )
 
-        texto_boton = fuente.render(
-            "JUGAR", True, (255, 255, 255)
-        )
+        pygame.draw.rect(ventana, color_actual, boton_jugar, border_radius=12)
+
+        texto_boton = fuente.render("JUGAR", True, (255, 255, 255))
         ventana.blit(
             texto_boton,
             (
@@ -334,11 +353,10 @@ while jugando:
         )
 
         for plataforma in plataformas:
-            velocidad_plataforma = velocidades_plataformas.get(
-                id(plataforma), 0
-            )
+            velocidad_plataforma = velocidades_plataformas.get(id(plataforma), 0)
 
             if velocidad_plataforma != 0:
+                x_anterior_plataforma = plataforma.x
                 plataforma.x += velocidad_plataforma
 
                 if plataforma.left <= 0:
@@ -349,16 +367,39 @@ while jugando:
                     plataforma.right = ANCHO
                     velocidades_plataformas[id(plataforma)] *= -1
 
+                desplazamiento_x = plataforma.x - x_anterior_plataforma
+
+                for objeto in objetos:
+                    if objeto["plataforma"] is plataforma:
+                        objeto["rect"].x += desplazamiento_x
+
+        for avion in aviones:
+            avion["rect"].x += avion["velocidad"]
+
+        aviones = [
+            avion for avion in aviones
+            if avion["rect"].right > 0 and avion["rect"].left < ANCHO
+        ]
+
         if velocidad_y > 0:
 
             pies_anterior = y_anterior + ALTO_PAU - MARGEN_PIES_PAU
             pies_actual = y_pau + ALTO_PAU - MARGEN_PIES_PAU
 
-            for plataforma in plataformas:
+            todas_plataformas = plataformas + nubes_plataformas
 
-                superficie = plataforma.top + MARGEN_SUPERIOR_PLAT
-                izquierda = plataforma.left + MARGEN_LATERAL_PLAT
-                derecha = plataforma.right - MARGEN_LATERAL_PLAT
+            for plataforma in todas_plataformas:
+
+                es_nube = plataforma in nubes_plataformas
+
+                if es_nube:
+                    superficie = plataforma.top + 10
+                    izquierda = plataforma.left + 12
+                    derecha = plataforma.right - 12
+                else:
+                    superficie = plataforma.top + MARGEN_SUPERIOR_PLAT
+                    izquierda = plataforma.left + MARGEN_LATERAL_PLAT
+                    derecha = plataforma.right - MARGEN_LATERAL_PLAT
 
                 if (
                     pies_anterior <= superficie
@@ -369,6 +410,10 @@ while jugando:
                     y_pau = superficie - ALTO_PAU + MARGEN_PIES_PAU
                     velocidad_y = salto
                     puntos += 1
+
+                    if es_nube:
+                        nubes_plataformas.remove(plataforma)
+
                     break
 
         if y_pau < ALTO // 2:
@@ -379,11 +424,14 @@ while jugando:
             for plataforma in plataformas:
                 plataforma.y += diferencia
 
-            for nube in nubes_peligrosas:
+            for nube in nubes_plataformas:
                 nube.y += diferencia
 
             for objeto in objetos:
                 objeto["rect"].y += diferencia
+
+            for avion in aviones:
+                avion["rect"].y += diferencia
 
         plataformas = [
             plataforma for plataforma in plataformas
@@ -396,8 +444,8 @@ while jugando:
             if id(plataforma) in velocidades_plataformas
         }
 
-        nubes_peligrosas = [
-            nube for nube in nubes_peligrosas
+        nubes_plataformas = [
+            nube for nube in nubes_plataformas
             if nube.y < ALTO + 100
         ]
 
@@ -417,12 +465,28 @@ while jugando:
             if random.random() < 0.35:
                 objetos.append(crear_objeto(nueva_plataforma))
 
-            if obtener_zona(puntos) == 1 and random.random() < 0.90:
-                x_nube = random.randint(0, ANCHO - 85)
-                y_nube = nueva_plataforma.y + random.randint(35, 100)
-                nubes_peligrosas.append(
-                    pygame.Rect(x_nube, y_nube, 85, 55)
+            zona_actual = obtener_zona(puntos)
+
+            if zona_actual >= 1 and random.random() < 0.20:
+                aviones.append(
+                    crear_avion(
+                        nueva_plataforma.y + random.randint(-30, 40)
+                    )
                 )
+
+            if zona_actual == 1 and random.random() < 0.80:
+                nubes_plataformas.append(
+                    crear_nube_plataforma(
+                        nueva_plataforma.y + random.randint(10, 90)
+                    )
+                )
+
+                if random.random() < 0.65:
+                    nubes_plataformas.append(
+                        crear_nube_plataforma(
+                            nueva_plataforma.y + random.randint(50, 120)
+                        )
+                    )
 
         ahora = pygame.time.get_ticks()
 
@@ -431,10 +495,7 @@ while jugando:
         else:
             gravedad = gravedad_normal * 0.45
 
-        if ahora > tiempo_iman:
-            iman_activo = False
-        else:
-            iman_activo = True
+        iman_activo = ahora <= tiempo_iman
 
         for objeto in objetos[:]:
 
@@ -472,12 +533,6 @@ while jugando:
 
                 objetos.remove(objeto)
 
-        if obtener_zona(puntos) == 1:
-            for nube in nubes_peligrosas:
-                if rect_pau.colliderect(nube):
-                    game_over = True
-                    break
-
         if y_pau > ALTO:
             game_over = True
 
@@ -498,8 +553,11 @@ while jugando:
         ventana.blit(imagen_plataforma, plataforma)
 
     if zona == 1:
-        for nube in nubes_peligrosas:
-            ventana.blit(nube_peligrosa, nube)
+        for nube in nubes_plataformas:
+            ventana.blit(nube_imagen, nube)
+
+    for avion in aviones:
+        ventana.blit(avion_imagen, avion["rect"])
 
     for objeto in objetos:
         tipo = objeto["tipo"]
