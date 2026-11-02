@@ -127,7 +127,7 @@ for nombre in ["reloj", "resorte", "moneda", "paraguas", "iman"]:
     ).convert_alpha()
 
     imagenes_objetos[nombre] = pygame.transform.scale(
-        imagen, (32, 32)
+        imagen, (35, 35)
     )
 
 ANCHO_PAU = 55
