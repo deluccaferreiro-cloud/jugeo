@@ -1,4 +1,5 @@
 
+
 import pygame
 import random
 import os
@@ -29,7 +30,7 @@ ANCHO = 800
 ALTO = 500
 
 ventana = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Comida cae")
+pygame.display.set_caption("Food droppp")
 
 reloj = pygame.time.Clock()
 
@@ -39,6 +40,14 @@ pantalla_actual = "instrucciones"
 motivo_game_over = ""
 
 fondo = cargar_imagen("comida.png", (ANCHO, ALTO), False)
+introduccion = cargar_imagen("intro.jpg", (ANCHO, ALTO), False)
+
+ruta_fuente = encontrar_archivo("CatCafe.ttf")
+
+fuente = pygame.font.Font(ruta_fuente, 32)
+fuente_grande = pygame.font.Font(ruta_fuente, 54)
+fuente_chica = pygame.font.Font(ruta_fuente, 22)
+fuente_titulo = pygame.font.Font(ruta_fuente, 64)
 
 pau_masticando = cargar_imagen("paumasticando.png", (100, 100))
 pau_agarrar_comida = cargar_imagen("paubocaabiertaparaM2.png", (100, 100))
@@ -65,10 +74,6 @@ esta_comiendo = False
 
 ANCHO_COMIDA = 48
 ALTO_COMIDA = 48
-
-fuente = pygame.font.Font(None, 38)
-fuente_grande = pygame.font.Font(None, 60)
-fuente_chica = pygame.font.Font(None, 27)
 
 boton_jugar = pygame.Rect(300, 405, 200, 60)
 
@@ -186,32 +191,29 @@ while jugando:
 
     if pantalla_actual == "instrucciones":
 
-        ventana.blit(fondo, (0, 0))
+        ventana.blit(introduccion, (0, 0))
 
         dibujar_texto(
             "FOOD DROP",
-            fuente_grande,
-            (255, 255, 255),
+            fuente_titulo,
+            (0, 0, 0),
             ANCHO // 2,
-            45
+            35
         )
 
         instrucciones = [
-            "Mueve a Pou con las flechas izquierda y derecha.",
-            "Atrapa los alimentos buenos para ganar puntos.",
-            "Si atrapas comida mala, pierdes.",
-            "Si dejas caer 8 alimentos buenos, pierdes.",
-            "La velocidad de la comida es constante.",
-            "Presiona ESPACIO o pulsa JUGAR para comenzar."
+            "Evita que PAU coma los alimentos malos, moviendolo con las flechas izquierda y derecha.",
+            "CUIDADO: si dejas caer 8 alimentos buenos, perdés el juego.",
+            "TIP: intenta ser rapido porque despues los alimentos van a caer mas rapido"
         ]
 
         for i, linea in enumerate(instrucciones):
             dibujar_texto(
                 linea,
                 fuente_chica,
-                (255, 255, 255),
+                (0, 0, 0),
                 ANCHO // 2,
-                155 + i * 35
+                145 + i * 35
             )
 
         color_boton = (
@@ -221,7 +223,9 @@ while jugando:
         )
 
         pygame.draw.rect(
-            ventana, color_boton, boton_jugar,
+            ventana,
+            color_boton,
+            boton_jugar,
             border_radius=12
         )
 
@@ -326,13 +330,15 @@ while jugando:
 
     texto_puntos = fuente.render(
         "Puntos: " + str(puntaje_comidita),
-        True, (255, 255, 255)
+        True,
+        (255, 255, 255)
     )
     ventana.blit(texto_puntos, (20, 15))
 
     texto_vidas = fuente.render(
         "Vidas: " + str(vidas_pau),
-        True, (255, 255, 255)
+        True,
+        (255, 255, 255)
     )
     ventana.blit(texto_vidas, (20, 50))
 
@@ -341,7 +347,8 @@ while jugando:
         + str(alimentos_perdidos)
         + "/"
         + str(ALIMENTOS_PERDIDOS_MAX),
-        True, (255, 255, 255)
+        True,
+        (255, 255, 255)
     )
     ventana.blit(texto_perdidos, (20, 90))
 
@@ -349,7 +356,7 @@ while jugando:
         dibujar_texto(
             "GAME OVER",
             fuente_grande,
-            (255, 70, 70),
+            (0,0,0),
             ANCHO // 2,
             195
         )
@@ -357,7 +364,7 @@ while jugando:
         dibujar_texto(
             motivo_game_over,
             fuente_chica,
-            (255, 255, 255),
+            (0,0,0),
             ANCHO // 2,
             260
         )
@@ -365,7 +372,7 @@ while jugando:
         dibujar_texto(
             "Presiona ESPACIO para volver a jugar",
             fuente_chica,
-            (255, 255, 255),
+            (0,0,0),
             ANCHO // 2,
             300
         )
