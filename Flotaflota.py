@@ -59,11 +59,11 @@ TIEMPO_EXTRA_RELOJ = 5
 ANCHO_BARRA = 250
 ALTO_BARRA = 22
 
-fuente = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 30)
-fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 55)
-fuente_instrucciones = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 23)
+fuente = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
+fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 50)
+fuente_instrucciones = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
 fuente_reinicio = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 27)
-fuente_tiempo = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 24)
+fuente_tiempo = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 15)
 
 COLOR_CELESTE = (135, 220, 255)
 
@@ -307,7 +307,7 @@ while jugando:
         ventana.blit(imagen_instrucciones, (0, 0))
 
         titulo = fuente_grande.render(
-            "FLOTA PAU", True, COLOR_CELESTE
+            "WATER HOP", True, COLOR_CELESTE
         )
 
         ventana.blit(
@@ -316,12 +316,11 @@ while jugando:
         )
 
         instrucciones = [
-            "OBJETIVO: Avanza saltando entre los flotaflota.",
-            "Flecha izquierda: salto normal.",
-            "Flecha derecha: doble salto.",
-            "Moneda: suma una moneda.",
-            "Reloj: agrega 5 segundos.",
-            "¡No caigas al agua!"
+            "Objetivo: saltar de flota en flota, para que PAU no caiga al agua",
+            "PAU pueda avanzar, utiliuza las flechas derecha e izquierda del teclado",
+            "Flecha izquierda: salto normal (1 punto)",
+            "Flecha derecha: salto doble (2 puntos)",
+            "TIP: agarrar los objetos que estan en los flota"
         ]
 
         for i, linea in enumerate(instrucciones):
