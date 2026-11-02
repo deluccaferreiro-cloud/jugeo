@@ -1,244 +1,373 @@
+
 import pygame
-import random, os
+import random
+import os
 
 def encontrar_archivo(nombre):
-    carpeta_raiz=os.path.dirname(__file__)
-    archivo=os.path.join(carpeta_raiz, "assets", "minijuegos", "comidaquecae", nombre)
-    return archivo
+    carpeta_raiz = os.path.dirname(__file__)
+    return os.path.join(
+        carpeta_raiz,
+        "assets",
+        "minijuegos",
+        "comidaquecae",
+        nombre
+    )
+
+def cargar_imagen(nombre, tamaño, transparencia=True):
+    imagen = pygame.image.load(encontrar_archivo(nombre))
+
+    if transparencia:
+        imagen = imagen.convert_alpha()
+    else:
+        imagen = imagen.convert()
+
+    return pygame.transform.scale(imagen, tamaño)
 
 pygame.init()
 
-jugando=True
-game_over=False
+ANCHO = 800
+ALTO = 500
 
-ANCHO=800
-ALTO=500
+ventana = pygame.display.set_mode((ANCHO, ALTO))
+pygame.display.set_caption("Comida cae")
 
-ventana=pygame.display.set_mode((ANCHO, ALTO))
+reloj = pygame.time.Clock()
 
-reloj=pygame.time.Clock()
+jugando = True
+game_over = False
+pantalla_actual = "instrucciones"
+motivo_game_over = ""
 
-fondo=pygame.image.load(encontrar_archivo("comida.png"))
+fondo = cargar_imagen("comida.png", (ANCHO, ALTO), False)
 
-pau_masticando=pygame.image.load(encontrar_archivo("paumasticando.png"))
-pau_masticando=pygame.transform.scale(pau_masticando,(100,100))
+pau_masticando = cargar_imagen("paumasticando.png", (100, 100))
+pau_agarrar_comida = cargar_imagen("paubocaabiertaparaM2.png", (100, 100))
 
-pau_agarrar_comida=pygame.image.load(encontrar_archivo("paubocaabiertaparaM2.png"))
-pau_agarrar_comida=pygame.transform.scale(pau_agarrar_comida,(100,100))
+ANCHO_PAU = 100
+ALTO_PAU = 100
 
-x_pau=350
-y_pau=400
+x_pau = 350
+y_pau = 400
+velocidad_pau = 7
 
-ancho_pau=100
-alto_pau=100
+vidas_pau = 3
+puntaje_comidita = 0
+alimentos_perdidos = 0
+ALIMENTOS_PERDIDOS_MAX = 8
 
-velocidad_pau=7
+comida_lista = []
 
-vidas_pau=3
+contador_comida = 0
+intervalo_comida = 45
+velocidad_comida = 4
+contador_comiendo = 0
+esta_comiendo = False
 
-comida_lista=[]
+ANCHO_COMIDA = 48
+ALTO_COMIDA = 48
 
-velocidad_comida=5
+fuente = pygame.font.Font(None, 38)
+fuente_grande = pygame.font.Font(None, 60)
+fuente_chica = pygame.font.Font(None, 27)
 
-contador_comida=0
+boton_jugar = pygame.Rect(300, 405, 200, 60)
 
-comida_buena=pygame.image.load(encontrar_archivo("comidabuena.png"))
-comida_buena=pygame.transform.scale(comida_buena,(50,50))
+alimentos_buenos = [
+    "crumblcookie.png",
+    "helado.png",
+    "huevo.png",
+    "sushi.png",
+    "tortilla.png",
+    "manzana.png",
+    "cupcake.png",
+    "banana.png"
+]
 
-comida_mala=pygame.image.load(encontrar_archivo("comidamala.png"))
-comida_mala=pygame.transform.scale(comida_mala,(50,50))
+alimentos_malos = [
+    "cd.png",
+    "destornillador.png",
+    "router.png",
+    "ram.png",
+    "zapatillas_rotas.png",
+    "pendrive.png",
+    "tornillo.png"
+]
 
-puntaje_comidita=0
+imagenes_buenas = {
+    nombre: cargar_imagen(nombre, (ANCHO_COMIDA, ALTO_COMIDA))
+    for nombre in alimentos_buenos
+}
 
-fuente=pygame.font.Font(None,50)
+imagenes_malas = {
+    nombre: cargar_imagen(nombre, (ANCHO_COMIDA, ALTO_COMIDA))
+    for nombre in alimentos_malos
+}
 
-contador_comiendo=0
+def reiniciar_juego():
+    global x_pau, vidas_pau, puntaje_comidita
+    global alimentos_perdidos, comida_lista
+    global contador_comida, velocidad_comida
+    global intervalo_comida, contador_comiendo
+    global esta_comiendo, game_over, motivo_game_over
+
+    x_pau = 350
+    vidas_pau = 3
+    puntaje_comidita = 0
+    alimentos_perdidos = 0
+
+    comida_lista = []
+
+    contador_comida = 0
+    velocidad_comida = 4
+    intervalo_comida = 45
+    contador_comiendo = 0
+    esta_comiendo = False
+
+    motivo_game_over = ""
+    game_over = False
+
+def crear_comida():
+    es_buena = random.random() < 0.70
+
+    if es_buena:
+        nombre = random.choice(alimentos_buenos)
+        tipo = "buena"
+    else:
+        nombre = random.choice(alimentos_malos)
+        tipo = "mala"
+
+    return {
+        "x": random.randint(0, ANCHO - ANCHO_COMIDA),
+        "y": -ALTO_COMIDA,
+        "tipo": tipo,
+        "nombre": nombre,
+        "rect": pygame.Rect(
+            0, -ALTO_COMIDA,
+            ANCHO_COMIDA, ALTO_COMIDA
+        )
+    }
+
+def dibujar_texto(texto, fuente_usada, color, centro_x, y):
+    superficie = fuente_usada.render(texto, True, color)
+    ventana.blit(
+        superficie,
+        (centro_x - superficie.get_width() // 2, y)
+    )
+
+reiniciar_juego()
 
 while jugando:
-
     reloj.tick(60)
 
-    for eventos in pygame.event.get():
+    for evento in pygame.event.get():
 
-        if eventos.type==pygame.QUIT:
-            jugando=False
+        if evento.type == pygame.QUIT:
+            jugando = False
 
-        if eventos.type==pygame.KEYDOWN:
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            if (
+                evento.button == 1
+                and pantalla_actual == "instrucciones"
+                and boton_jugar.collidepoint(evento.pos)
+            ):
+                reiniciar_juego()
+                pantalla_actual = "juego"
 
-            if eventos.key==pygame.K_SPACE and game_over:
+        if evento.type == pygame.KEYDOWN:
 
-                x_pau=350
-                puntaje_comidita=0
-                vidas_pau=3
+            if pantalla_actual == "instrucciones":
+                if evento.key == pygame.K_SPACE:
+                    reiniciar_juego()
+                    pantalla_actual = "juego"
 
-                comida_lista.clear()
+            elif game_over:
+                if evento.key == pygame.K_SPACE:
+                    reiniciar_juego()
 
-                contador_comida=0
-                contador_comiendo=0
+    if pantalla_actual == "instrucciones":
 
-                game_over=False
+        ventana.blit(fondo, (0, 0))
+
+        dibujar_texto(
+            "FOOD DROP",
+            fuente_grande,
+            (255, 255, 255),
+            ANCHO // 2,
+            45
+        )
+
+        instrucciones = [
+            "Mueve a Pou con las flechas izquierda y derecha.",
+            "Atrapa los alimentos buenos para ganar puntos.",
+            "Si atrapas comida mala, pierdes.",
+            "Si dejas caer 8 alimentos buenos, pierdes.",
+            "La velocidad de la comida es constante.",
+            "Presiona ESPACIO o pulsa JUGAR para comenzar."
+        ]
+
+        for i, linea in enumerate(instrucciones):
+            dibujar_texto(
+                linea,
+                fuente_chica,
+                (255, 255, 255),
+                ANCHO // 2,
+                155 + i * 35
+            )
+
+        color_boton = (
+            (50, 160, 75)
+            if boton_jugar.collidepoint(pygame.mouse.get_pos())
+            else (80, 190, 100)
+        )
+
+        pygame.draw.rect(
+            ventana, color_boton, boton_jugar,
+            border_radius=12
+        )
+
+        dibujar_texto(
+            "JUGAR",
+            fuente,
+            (255, 255, 255),
+            boton_jugar.centerx,
+            boton_jugar.centery - 17
+        )
+
+        pygame.display.update()
+        continue
 
     if not game_over:
 
-        teclas=pygame.key.get_pressed()
+        teclas = pygame.key.get_pressed()
 
         if teclas[pygame.K_LEFT]:
-            x_pau-=velocidad_pau
+            x_pau -= velocidad_pau
 
         if teclas[pygame.K_RIGHT]:
-            x_pau+=velocidad_pau
+            x_pau += velocidad_pau
 
-        if x_pau<0:
-            x_pau=0
+        x_pau = max(0, min(x_pau, ANCHO - ANCHO_PAU))
 
-        if x_pau>ANCHO-100:
-            x_pau=ANCHO-100
+        contador_comida += 1
 
-        contador_comida+=1
+        if contador_comida >= intervalo_comida:
+            contador_comida = 0
+            comida_lista.append(crear_comida())
 
-        if contador_comida>=50:
-
-            contador_comida=0
-
-            x_comida=random.randint(0,ANCHO-50)
-
-            tipo=random.randint(1,10)
-
-            if tipo<=7:
-                tipo_comida="buena"
-            else:
-                tipo_comida="mala"
-
-            comida_lista.append([x_comida,-50,tipo_comida])
-
-        for comida in comida_lista:
-            comida[1]+=velocidad_comida
-
-        pau_rect=pygame.Rect(
-            x_pau,
-            y_pau,
-            100,
-            100
+        pau_rect = pygame.Rect(
+            x_pau + 10,
+            y_pau + 10,
+            ANCHO_PAU - 20,
+            ALTO_PAU - 20
         )
 
-        for comida in comida_lista:
+        for comida in comida_lista[:]:
 
-            comida_rect=pygame.Rect(
-                comida[0],
-                comida[1],
-                50,
-                50
+            comida["y"] += velocidad_comida
+
+            comida["rect"].topleft = (
+                comida["x"],
+                comida["y"]
             )
 
-            if pau_rect.colliderect(comida_rect):
+            if pau_rect.colliderect(comida["rect"]):
 
-                if comida[2]=="buena":
-
-                    puntaje_comidita+=1
-                    contador_comiendo=15
-
+                if comida["tipo"] == "buena":
+                    puntaje_comidita += 1
+                    contador_comiendo = 15
+                    esta_comiendo = True
                 else:
+                    game_over = True
+                    motivo_game_over = "Atrapaste comida mala."
 
-                    vidas_pau-=1
+                comida_lista.remove(comida)
 
-                    if vidas_pau<=0:
-                        vidas_pau=0
-                        game_over=True
+                if game_over:
+                    break
 
-                comida[1]=ALTO+100
+            elif comida["y"] >= ALTO:
 
-        comida_lista=[
-            comida for comida in comida_lista
-            if comida[1]<ALTO+50
-        ]
+                if comida["tipo"] == "buena":
+                    alimentos_perdidos += 1
 
-        if contador_comiendo>0:
+                    if alimentos_perdidos >= ALIMENTOS_PERDIDOS_MAX:
+                        game_over = True
+                        motivo_game_over = "Dejaste caer 8 alimentos buenos."
 
-            contador_comiendo-=1
-            esta_comiendo=True
+                comida_lista.remove(comida)
 
+                if game_over:
+                    break
+
+        if contador_comiendo > 0:
+            contador_comiendo -= 1
+            esta_comiendo = True
         else:
+            esta_comiendo = False
 
-            esta_comiendo=False
-
-    ventana.blit(fondo,(0,0))
+    ventana.blit(fondo, (0, 0))
 
     for comida in comida_lista:
 
-        if comida[2]=="buena":
-
-            ventana.blit(
-                comida_buena,
-                (comida[0],comida[1])
-            )
-
+        if comida["tipo"] == "buena":
+            imagen = imagenes_buenas[comida["nombre"]]
         else:
+            imagen = imagenes_malas[comida["nombre"]]
 
-            ventana.blit(
-                comida_mala,
-                (comida[0],comida[1])
-            )
+        ventana.blit(
+            imagen,
+            (comida["x"], comida["y"])
+        )
 
     if esta_comiendo:
-
-        ventana.blit(
-            pau_masticando,
-            (x_pau,y_pau)
-        )
-
+        ventana.blit(pau_masticando, (x_pau, y_pau))
     else:
+        ventana.blit(pau_agarrar_comida, (x_pau, y_pau))
 
-        ventana.blit(
-            pau_agarrar_comida,
-            (x_pau,y_pau)
-        )
-
-    texto_punto=fuente.render(
-        "Puntos: "+str(puntaje_comidita),
-        True,
-        (255,255,255)
+    texto_puntos = fuente.render(
+        "Puntos: " + str(puntaje_comidita),
+        True, (255, 255, 255)
     )
+    ventana.blit(texto_puntos, (20, 15))
 
-    ventana.blit(
-        texto_punto,
-        (20,20)
+    texto_vidas = fuente.render(
+        "Vidas: " + str(vidas_pau),
+        True, (255, 255, 255)
     )
+    ventana.blit(texto_vidas, (20, 50))
 
-    texto_vidas=fuente.render(
-        "Vidas: "+str(vidas_pau),
-        True,
-        (255,255,255)
+    texto_perdidos = fuente_chica.render(
+        "Alimentos perdidos: "
+        + str(alimentos_perdidos)
+        + "/"
+        + str(ALIMENTOS_PERDIDOS_MAX),
+        True, (255, 255, 255)
     )
-
-    ventana.blit(
-        texto_vidas,
-        (20,60)
-    )
+    ventana.blit(texto_perdidos, (20, 90))
 
     if game_over:
-
-        texto_game_over=fuente.render(
+        dibujar_texto(
             "GAME OVER",
-            True,
-            (255,0,0)
+            fuente_grande,
+            (255, 70, 70),
+            ANCHO // 2,
+            195
         )
 
-        texto_reiniciar=pygame.font.Font(
-            None,30
-        ).render(
+        dibujar_texto(
+            motivo_game_over,
+            fuente_chica,
+            (255, 255, 255),
+            ANCHO // 2,
+            260
+        )
+
+        dibujar_texto(
             "Presiona ESPACIO para volver a jugar",
-            True,
-            (255,255,255)
-        )
-
-        ventana.blit(
-            texto_game_over,
-            (320,270)
-        )
-
-        ventana.blit(
-            texto_reiniciar,
-            (220,320)
+            fuente_chica,
+            (255, 255, 255),
+            ANCHO // 2,
+            300
         )
 
     pygame.display.update()

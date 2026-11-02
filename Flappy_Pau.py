@@ -8,7 +8,7 @@ def encontrar_archivo(nombre):
 
 pygame.init()
 
-jugando = True
+jugando = True 
 game_over = False
 
 ANCHO = 800
