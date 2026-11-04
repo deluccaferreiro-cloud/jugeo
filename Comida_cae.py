@@ -200,7 +200,8 @@ while jugando:
         )
 
         instrucciones = [
-            "Evita que PAU coma los alimentos malos, moviendolo con las flechas izquierda y derecha.",
+            "Evita que PAU coma los alimentos malos", 
+            "moviendolo con las flechas izquierda y derecha.",
             "CUIDADO: si dejas caer 8 alimentos buenos, perdés el juego.",
             "TIP: intenta ser rapido porque despues los alimentos van a caer mas rapido"
         ]
@@ -329,14 +330,14 @@ while jugando:
     texto_puntos = fuente.render(
         "Puntos: " + str(puntaje_comidita),
         True,
-        (255, 255, 255)
+        (0,0,0)
     )
     ventana.blit(texto_puntos, (20, 15))
 
     texto_vidas = fuente.render(
         "Vidas: " + str(vidas_pau),
         True,
-        (255, 255, 255)
+        (0,0,0)
     )
     ventana.blit(texto_vidas, (20, 50))
 
@@ -346,7 +347,7 @@ while jugando:
         + "/"
         + str(ALIMENTOS_PERDIDOS_MAX),
         True,
-        (255, 255, 255)
+        (0,0,0)
     )
     ventana.blit(texto_perdidos, (20, 90))
 
