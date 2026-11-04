@@ -227,3 +227,5 @@ while jugando:
 
 
 pygame.quit()
+
+
