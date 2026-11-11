@@ -1,4 +1,3 @@
-
 import pygame
 import random
 import os
@@ -87,6 +86,10 @@ intervalo_comida = INTERVALO_INICIAL
 
 boton_jugar = pygame.Rect(300, 405, 200, 60)
 
+boton_salir = pygame.Rect(20, 435, 120, 45)
+color_salir = (190, 55, 55)
+color_salir_hover = (230, 65, 65)
+
 alimentos_buenos = [
     "crumblcookie.png",
     "helado.png",
@@ -117,6 +120,33 @@ imagenes_malas = {
     nombre: cargar_imagen(nombre, (ANCHO_COMIDA, ALTO_COMIDA))
     for nombre in alimentos_malos
 }
+
+def dibujar_boton_salir():
+    if boton_salir.collidepoint(pygame.mouse.get_pos()):
+        color_actual = color_salir_hover
+    else:
+        color_actual = color_salir
+
+    pygame.draw.rect(
+        ventana,
+        color_actual,
+        boton_salir,
+        border_radius=10
+    )
+
+    texto_salir = fuente_chica.render(
+        "SALIR",
+        True,
+        (255, 255, 255)
+    )
+
+    ventana.blit(
+        texto_salir,
+        (
+            boton_salir.centerx - texto_salir.get_width() // 2,
+            boton_salir.centery - texto_salir.get_height() // 2
+        )
+    )
 
 def dificultad():
     return min(1.0, puntaje_comidita / PUNTOS_DIFICULTAD_MAX)
@@ -190,13 +220,17 @@ while jugando:
             jugando = False
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
-            if (
-                evento.button == 1
-                and pantalla_actual == "instrucciones"
-                and boton_jugar.collidepoint(evento.pos)
-            ):
-                reiniciar_juego()
-                pantalla_actual = "juego"
+            if evento.button == 1:
+
+                if boton_salir.collidepoint(evento.pos):
+                    jugando = False
+
+                elif (
+                    pantalla_actual == "instrucciones"
+                    and boton_jugar.collidepoint(evento.pos)
+                ):
+                    reiniciar_juego()
+                    pantalla_actual = "juego"
 
         if evento.type == pygame.KEYDOWN:
 
@@ -208,6 +242,9 @@ while jugando:
             elif game_over:
                 if evento.key == pygame.K_SPACE:
                     reiniciar_juego()
+
+    if not jugando:
+        break
 
     if pantalla_actual == "instrucciones":
 
@@ -223,10 +260,9 @@ while jugando:
 
         instrucciones = [
             "Evita que PAU coma los alimentos malos",
-            "moviendolo con las flechas izquierda y derecha.",
-            "CUIDADO: si dejas caer 8 alimentos buenos, perdés el juego.",
-            "TIP: intenta ser rapido porque despues los alimentos van a caer mas rapido",
-            "Cada vez cae mas comida y hay mas alimentos malos."
+            "y que se caigan los alimentos buenos.",
+            "Si se caen 8 alimentos buenos, perdes",
+            "PAU se mueve con las flchas izquierda y derecha",
         ]
 
         for i, linea in enumerate(instrucciones):
@@ -258,6 +294,8 @@ while jugando:
             boton_jugar.centerx,
             boton_jugar.centery - 17
         )
+
+        dibujar_boton_salir()
 
         pygame.display.update()
         continue
@@ -425,6 +463,8 @@ while jugando:
             ANCHO // 2,
             315
         )
+
+    dibujar_boton_salir()
 
     pygame.display.update()
 
