@@ -359,14 +359,14 @@ while jugando:
         ventana.blit(titulo, (ANCHO // 2 - titulo.get_width() // 2, 35))
 
         instrucciones = [
-            "OBJETIVO: Saltar de plataforma en plataforma.",
-            "Usa las flechas izquierda y derecha para moverte.",
-            "Algunas plataformas se mueven.",
-            "Reloj: mas tiempo. Resorte: salto alto.",
-            "Paraguas: caida lenta. Monedas: ganas puntos.",
-            "Iman: atrae monedas cercanas.",
-            "Aviones: se mueven y desaparecen.",
-            "Nubes de Superficie: desaparecen al pisarlas."
+            "Evita que PAU caiga al vacio", 
+            "saltando de plataqforma en plataforma",
+            "PAU se mueve utilizando las flechas derecha e izquierda",
+            "NIVELES: 0-50: subsuelo",
+            "50-150: superficie",
+            "150-300: atmosfera",
+            "300-500: espacio",
+            "500 - +: paraiso",
         ]
 
         for i, linea in enumerate(instrucciones):
