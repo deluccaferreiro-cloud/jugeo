@@ -249,12 +249,8 @@ while jugando:
         )
 
         instrucciones = [
-            "Presiona ESPACIO para hacer volar a Pou.",
-            "Esquiva las tuberias para conseguir puntos.",
-            "Junta monedas mientras avanzas.",
-            "Cada 2 tuberias aparece una moneda.",
-            "Cada 20 tuberias aparece un puñado especial.",
-            "No choques contra las tuberias ni los bordes."
+            "Evita que PAU toque las tuberias",
+            "Para que PAU pueda volar, tenes que presionar el espacio"
         ]
 
         for i, linea in enumerate(instrucciones):
