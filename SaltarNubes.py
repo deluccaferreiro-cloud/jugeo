@@ -683,7 +683,7 @@ while jugando:
             "Iman activo", True, (255, 255, 255)
         )
 
-        ventana.blit(texto_efecto, (ANCHO - 230, 160))
+        ventana.blit(texto_efecto, (ANCHO - 230, 120))
 
     if game_over:
         texto = fuente_grande.render(
