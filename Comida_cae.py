@@ -1,3 +1,4 @@
+
 import pygame
 import random
 import os
@@ -57,7 +58,6 @@ x_pau = 350
 y_pau = 400
 velocidad_pau = 7
 
-
 puntaje_comidita = 0
 alimentos_perdidos = 0
 ALIMENTOS_PERDIDOS_MAX = 8
@@ -71,18 +71,16 @@ esta_comiendo = False
 ANCHO_COMIDA = 48
 ALTO_COMIDA = 48
 
-# ----- Dificultad progresiva -----
-# La dificultad (0 a 1) sube con los puntos y se estabiliza en el maximo.
 PUNTOS_DIFICULTAD_MAX = 80
 
-VELOCIDAD_INICIAL = 4       # velocidad de caida al empezar
-VELOCIDAD_MAXIMA = 9.5      # velocidad de caida en dificultad maxima
+VELOCIDAD_INICIAL = 4
+VELOCIDAD_MAXIMA = 9.5
 
-INTERVALO_INICIAL = 45      # frames entre cada comida al empezar
-INTERVALO_MINIMO = 20       # frames entre cada comida en dificultad maxima
+INTERVALO_INICIAL = 45
+INTERVALO_MINIMO = 20
 
-PROB_BUENA_INICIAL = 0.70   # 70% buena al empezar
-PROB_BUENA_MINIMA = 0.40    # 40% buena (60% mala) en dificultad maxima
+PROB_BUENA_INICIAL = 0.70
+PROB_BUENA_MINIMA = 0.40
 
 velocidad_comida = VELOCIDAD_INICIAL
 intervalo_comida = INTERVALO_INICIAL
@@ -132,7 +130,7 @@ def probabilidad_buena():
     ) * dificultad()
 
 def reiniciar_juego():
-    global x_pau,puntaje_comidita
+    global x_pau, puntaje_comidita
     global alimentos_perdidos, comida_lista
     global contador_comida, velocidad_comida
     global intervalo_comida, contador_comiendo
@@ -154,7 +152,6 @@ def reiniciar_juego():
     game_over = False
 
 def crear_comida():
-    # Con mas dificultad cae cada vez mas comida mala
     es_buena = random.random() < probabilidad_buena()
 
     if es_buena:
@@ -225,7 +222,7 @@ while jugando:
         )
 
         instrucciones = [
-            "Evita que PAU coma los alimentos malos", 
+            "Evita que PAU coma los alimentos malos",
             "moviendolo con las flechas izquierda y derecha.",
             "CUIDADO: si dejas caer 8 alimentos buenos, perdés el juego.",
             "TIP: intenta ser rapido porque despues los alimentos van a caer mas rapido",
@@ -277,7 +274,6 @@ while jugando:
 
         x_pau = max(0, min(x_pau, ANCHO - ANCHO_PAU))
 
-        # La velocidad y la frecuencia de la comida suben con la dificultad
         d = dificultad()
 
         velocidad_comida = (
@@ -368,14 +364,14 @@ while jugando:
     texto_puntos = fuente.render(
         "Puntos: " + str(puntaje_comidita),
         True,
-        (0,0,0)
+        (0, 0, 0)
     )
     ventana.blit(texto_puntos, (20, 15))
 
     texto_nivel = fuente_chica.render(
         "Nivel: " + str(nivel_actual()),
         True,
-        (0,0,0)
+        (0, 0, 0)
     )
     ventana.blit(texto_nivel, (20, 55))
 
@@ -385,33 +381,49 @@ while jugando:
         + "/"
         + str(ALIMENTOS_PERDIDOS_MAX),
         True,
-        (0,0,0)
+        (0, 0, 0)
     )
     ventana.blit(texto_perdidos, (20, 90))
 
     if game_over:
+
+        pygame.draw.rect(
+            ventana,
+            (25, 25, 25),
+            (100, 140, 600, 230),
+            border_radius=18
+        )
+
         dibujar_texto(
             "GAME OVER",
             fuente_grande,
-            (0,0,0),
+            (255, 80, 80),
             ANCHO // 2,
-            195
+            155
+        )
+
+        dibujar_texto(
+            "Puntos conseguidos: " + str(puntaje_comidita),
+            fuente,
+            (255, 255, 255),
+            ANCHO // 2,
+            225
         )
 
         dibujar_texto(
             motivo_game_over,
             fuente_chica,
-            (0,0,0),
+            (255, 255, 255),
             ANCHO // 2,
-            260
+            270
         )
 
         dibujar_texto(
-            "Presiona ESPACIO para volver a jugar",
+            "Presiona ESPACIO para reiniciar",
             fuente_chica,
-            (0,0,0),
+            (255, 255, 255),
             ANCHO // 2,
-            300
+            315
         )
 
     pygame.display.update()
