@@ -57,7 +57,7 @@ x_pau = 350
 y_pau = 400
 velocidad_pau = 7
 
-vidas_pau = 3
+
 puntaje_comidita = 0
 alimentos_perdidos = 0
 ALIMENTOS_PERDIDOS_MAX = 8
@@ -107,14 +107,13 @@ imagenes_malas = {
 }
 
 def reiniciar_juego():
-    global x_pau, vidas_pau, puntaje_comidita
+    global x_pau,puntaje_comidita
     global alimentos_perdidos, comida_lista
     global contador_comida, velocidad_comida
     global intervalo_comida, contador_comiendo
     global esta_comiendo, game_over, motivo_game_over
 
     x_pau = 350
-    vidas_pau = 3
     puntaje_comidita = 0
     alimentos_perdidos = 0
 
@@ -333,13 +332,6 @@ while jugando:
         (0,0,0)
     )
     ventana.blit(texto_puntos, (20, 15))
-
-    texto_vidas = fuente.render(
-        "Vidas: " + str(vidas_pau),
-        True,
-        (0,0,0)
-    )
-    ventana.blit(texto_vidas, (20, 50))
 
     texto_perdidos = fuente_chica.render(
         "Alimentos perdidos: "
