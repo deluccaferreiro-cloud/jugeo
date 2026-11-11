@@ -359,7 +359,7 @@ while jugando:
         ventana.blit(titulo, (ANCHO // 2 - titulo.get_width() // 2, 35))
 
         instrucciones = [
-            "Evita que PAU caiga al vacio", 
+            "Evita que PAU caiga al vacio",
             "saltando de plataqforma en plataforma",
             "PAU se mueve utilizando las flechas derecha e izquierda",
             "NIVELES: 0-50: subsuelo",
@@ -640,6 +640,9 @@ while jugando:
                 pygame.Rect(0, corte_y, ANCHO, ALTO - corte_y)
             )
 
+    if transicion is not None:
+        ventana.blit(fondos_cambio[transicion["i"]], (0, transicion["y"]))
+
     for plataforma in plataformas:
         if transicion is not None and corte is not None:
             if plataforma.centery < corte:
@@ -664,9 +667,6 @@ while jugando:
 
         if tipo in imagenes_objetos:
             ventana.blit(imagenes_objetos[tipo], rect_objeto)
-
-    if transicion is not None:
-        ventana.blit(fondos_cambio[transicion["i"]], (0, transicion["y"]))
 
     ventana.blit(pau, (x_pau, y_pau))
 
