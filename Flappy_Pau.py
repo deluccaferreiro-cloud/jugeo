@@ -1,15 +1,32 @@
 import pygame
-import random, os
+import random
+import os
 
 def encontrar_archivo(nombre):
     carpeta_raiz = os.path.dirname(__file__)
-    archivo = os.path.join(carpeta_raiz, "assets", "minijuegos", "flappy", nombre)
-    return archivo
+    return os.path.join(
+        carpeta_raiz,
+        "assets",
+        "minijuegos",
+        "flappy",
+        nombre
+    )
+
+def cargar_imagen(nombre, tamaño, transparencia=True):
+    imagen = pygame.image.load(encontrar_archivo(nombre))
+
+    if transparencia:
+        imagen = imagen.convert_alpha()
+    else:
+        imagen = imagen.convert()
+
+    return pygame.transform.scale(imagen, tamaño)
 
 pygame.init()
 
 jugando = True
 game_over = False
+pantalla_actual = "intro"
 
 ANCHO = 800
 ALTO = 500
@@ -19,8 +36,32 @@ pygame.display.set_caption("Flappy Pau")
 
 reloj = pygame.time.Clock()
 
-fondo = pygame.image.load(encontrar_archivo("flappy.png"))
-pau = pygame.image.load(encontrar_archivo("flappypau.png"))
+fondo = cargar_imagen("flappy.png", (ANCHO, ALTO), False)
+introduccion = cargar_imagen("intro.jpg", (ANCHO, ALTO), False)
+
+pau = cargar_imagen("flappypau.png", (67, 67))
+
+moneda_img = cargar_imagen("moneda.png", (32, 32))
+saco_moneda_img = cargar_imagen("sacomonedas.png", (55, 55))
+
+ANCHO_TUBO = 80
+ESPACIO = 170
+VELOCIDAD_TUBOS = 4
+
+tuberia_original = pygame.image.load(
+    encontrar_archivo("tuberia.png")
+).convert_alpha()
+
+tuberia_vertical = pygame.transform.scale(
+    tuberia_original,
+    (ANCHO_TUBO, ALTO)
+)
+
+tuberia_arriba_img = pygame.transform.flip(
+    tuberia_vertical,
+    False,
+    True
+)
 
 x_pau = 150
 y_pau = 300
@@ -28,93 +69,260 @@ y_pau = 300
 ancho_pau = 67
 alto_pau = 67
 
-
-pau = pygame.transform.scale(pau, (ancho_pau, alto_pau))
-
 velocidad_y = 0
 gravedad = 0.5
 salto = -9
 
-ancho_ob = 80
-espacio = 170
-velocidad_tubos = 4
-
 ob = []
-
-x_tubo = 800
-altura_arriba = random.randint(100, 300)
-
-ob.append([
-    x_tubo,
-    altura_arriba
-])
+monedas_lista = []
 
 puntos = 0
+monedas = 0
 
-fuente = pygame.font.Font(None, 50)
+fuente = pygame.font.Font(
+    encontrar_archivo("CloudySunday.ttf"),
+    40
+)
 
+fuente_grande = pygame.font.Font(
+    encontrar_archivo("CloudySunday.ttf"),
+    65
+)
 
-def crear_ob(ob):
+fuente_chica = pygame.font.Font(
+    encontrar_archivo("CloudySunday.ttf"),
+    25
+)
+
+boton_jugar = pygame.Rect(300, 405, 200, 60)
+
+boton_salir = pygame.Rect(20, 435, 120, 45)
+color_salir = (190, 55, 55)
+color_salir_hover = (230, 65, 65)
+
+def dibujar_texto(texto, fuente_usada, color, centro_x, y):
+    superficie = fuente_usada.render(texto, True, color)
+    ventana.blit(
+        superficie,
+        (centro_x - superficie.get_width() // 2, y)
+    )
+
+def dibujar_boton_salir():
+    if boton_salir.collidepoint(pygame.mouse.get_pos()):
+        color_actual = color_salir_hover
+    else:
+        color_actual = color_salir
+
+    pygame.draw.rect(
+        ventana,
+        color_actual,
+        boton_salir,
+        border_radius=10
+    )
+
+    texto_salir = fuente_chica.render(
+        "SALIR",
+        True,
+        (255, 255, 255)
+    )
+
+    ventana.blit(
+        texto_salir,
+        (
+            boton_salir.centerx - texto_salir.get_width() // 2,
+            boton_salir.centery - texto_salir.get_height() // 2
+        )
+    )
+
+def crear_ob(ob, numero_tubo=None):
+
     altura = random.randint(100, 300)
-    ob.append([800, altura])
 
+    ob.append([
+        800,
+        altura
+    ])
+
+    if numero_tubo is not None:
+
+        centro_y = altura + ESPACIO // 2
+
+        if numero_tubo % 2 == 0:
+
+            monedas_lista.append({
+                "x": 800 + 20,
+                "y": centro_y - 35,
+                "tipo": "individual",
+                "valor": 1,
+                "rect": pygame.Rect(0, 0, 32, 32)
+            })
+
+        if numero_tubo % 20 == 0:
+
+            cantidad = random.choice([3, 5])
+
+            monedas_lista.append({
+                "x": 800 + 20,
+                "y": centro_y + 25,
+                "tipo": "saco",
+                "valor": cantidad,
+                "rect": pygame.Rect(0, 0, 55, 55)
+            })
+
+def reiniciar_juego():
+
+    global x_pau, y_pau
+    global velocidad_y
+    global puntos, game_over
+    global ob, monedas_lista
+
+    x_pau = 150
+    y_pau = 300
+
+    velocidad_y = 0
+
+    puntos = 0
+
+    ob = []
+    monedas_lista = []
+
+    game_over = False
+
+    crear_ob(ob)
+
+reiniciar_juego()
 
 while jugando:
 
     reloj.tick(60)
 
-    
     for evento in pygame.event.get():
 
         if evento.type == pygame.QUIT:
             jugando = False
 
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+
+            if evento.button == 1:
+
+                if boton_salir.collidepoint(evento.pos):
+                    jugando = False
+
+                elif (
+                    pantalla_actual == "intro"
+                    and boton_jugar.collidepoint(evento.pos)
+                ):
+                    reiniciar_juego()
+                    pantalla_actual = "juego"
+
         if evento.type == pygame.KEYDOWN:
 
-            if evento.key == pygame.K_SPACE:
+            if pantalla_actual == "intro":
 
-                if game_over:
-                    y_pau = 300
-                    velocidad_y = 0
+                if evento.key == pygame.K_SPACE:
+                    reiniciar_juego()
+                    pantalla_actual = "juego"
 
-                    ob.clear()
-                    ob.append([800, random.randint(100, 300)])
+            elif game_over:
 
-                    puntos = 0
-                    game_over = False
+                if evento.key == pygame.K_SPACE:
+                    reiniciar_juego()
 
-                else:
+            else:
+
+                if evento.key == pygame.K_SPACE:
                     velocidad_y = salto
 
-    
+    if not jugando:
+        break
+
+    if pantalla_actual == "intro":
+
+        ventana.blit(introduccion, (0, 0))
+
+        dibujar_texto(
+            "FLAPPY PAU",
+            fuente_grande,
+            (255, 255, 255),
+            ANCHO // 2,
+            70
+        )
+
+        instrucciones = [
+            "Evita que PAU toque las tuberias",
+            "Para que PAU pueda volar, tenes que presionar el espacio"
+        ]
+
+        for i, linea in enumerate(instrucciones):
+
+            dibujar_texto(
+                linea,
+                fuente_chica,
+                (255, 255, 255),
+                ANCHO // 2,
+                175 + i * 32
+            )
+
+        color_boton = (
+            (50, 160, 75)
+            if boton_jugar.collidepoint(pygame.mouse.get_pos())
+            else (80, 190, 100)
+        )
+
+        pygame.draw.rect(
+            ventana,
+            color_boton,
+            boton_jugar,
+            border_radius=12
+        )
+
+        dibujar_texto(
+            "JUGAR",
+            fuente,
+            (255, 255, 255),
+            boton_jugar.centerx,
+            boton_jugar.centery - 20
+        )
+
+        dibujar_boton_salir()
+
+        pygame.display.update()
+        continue
+
     if not game_over:
 
-    
         velocidad_y += gravedad
         y_pau += velocidad_y
 
-        
         for tubo in ob:
-            tubo[0] -= velocidad_tubos
+            tubo[0] -= VELOCIDAD_TUBOS
 
-        
         if len(ob) > 0 and ob[-1][0] < 450:
-            crear_ob(ob)
 
-       
-        if len(ob) > 0 and ob[0][0] < -ancho_ob:
+            numero_proximo = puntos + len(ob) + 1
+            crear_ob(ob, numero_proximo)
+
+        if len(ob) > 0 and ob[0][0] < -ANCHO_TUBO:
+
             ob.pop(0)
             puntos += 1
 
-        
+        for moneda in monedas_lista:
+
+            moneda["x"] -= VELOCIDAD_TUBOS
+
+            moneda["rect"].topleft = (
+                moneda["x"],
+                moneda["y"]
+            )
+
         pau_rect = pygame.Rect(
             x_pau + 15,
             y_pau + 15,
             ancho_pau - 30,
-            alto_pau- 30
+            alto_pau - 30
         )
 
-        
         for tubo in ob:
 
             x = tubo[0]
@@ -123,15 +331,15 @@ while jugando:
             tubo_arriba = pygame.Rect(
                 x,
                 0,
-                ancho_ob,
+                ANCHO_TUBO,
                 altura
             )
 
             tubo_abajo = pygame.Rect(
                 x,
-                altura + espacio,
-                ancho_ob,
-                ALTO - (altura + espacio)
+                altura + ESPACIO,
+                ANCHO_TUBO,
+                ALTO - (altura + ESPACIO)
             )
 
             if pau_rect.colliderect(tubo_arriba):
@@ -140,90 +348,118 @@ while jugando:
             if pau_rect.colliderect(tubo_abajo):
                 game_over = True
 
-    
+        for moneda in monedas_lista[:]:
+
+            if pau_rect.colliderect(moneda["rect"]):
+
+                monedas += moneda["valor"]
+                monedas_lista.remove(moneda)
+
+            elif moneda["x"] < -60:
+
+                monedas_lista.remove(moneda)
+
         if y_pau + alto_pau >= ALTO:
             game_over = True
 
-        
         if y_pau <= 0:
             game_over = True
 
     ventana.blit(fondo, (0, 0))
-
-
-    verde = (0, 128, 0)
 
     for tubo in ob:
 
         x = tubo[0]
         altura = tubo[1]
 
-        pygame.draw.rect(
-            ventana,
-            verde,
-            (x, 0, ancho_ob, altura)
+        ventana.blit(
+            tuberia_arriba_img,
+            (x, altura - ALTO)
         )
 
-        pygame.draw.rect(
-            ventana,
-            verde,
-            (
-                x,
-                altura + espacio,
-                ancho_ob,
-                ALTO - (altura + espacio)
+        ventana.blit(
+            tuberia_vertical,
+            (x, altura + ESPACIO)
+        )
+
+    for moneda in monedas_lista:
+
+        if moneda["tipo"] == "individual":
+
+            ventana.blit(
+                moneda_img,
+                (moneda["x"], moneda["y"])
             )
-        )
 
-  
+        else:
+
+            ventana.blit(
+                saco_moneda_img,
+                (moneda["x"], moneda["y"])
+            )
+
     ventana.blit(
         pau,
         (x_pau, y_pau)
     )
 
-   
-    blanco = (255, 255, 255)
-
-    texto = fuente.render(
-        str(puntos),
+    texto_puntos = fuente.render(
+        "Puntos: " + str(puntos),
         True,
-        blanco
+        (255, 255, 255)
     )
 
     ventana.blit(
-        texto,
-        (ANCHO // 2, 30)
+        texto_puntos,
+        (20, 20)
     )
 
-    
+    texto_monedas = fuente.render(
+        "Monedas: " + str(monedas),
+        True,
+        (255, 230, 70)
+    )
+
+    ventana.blit(
+        texto_monedas,
+        (20, 65)
+    )
+
     if game_over:
 
-        texto_game_over = fuente.render(
-            "GAME OVER...",
-            True,
-            blanco
+        pygame.draw.rect(
+            ventana,
+            (25, 25, 25),
+            (100, 170, 600, 180),
+            border_radius=18
         )
 
-        texto_reiniciar = pygame.font.Font(
-            None,
-            30
-        ).render(
+        dibujar_texto(
+            "GAME OVER",
+            fuente_grande,
+            (255, 80, 80),
+            ANCHO // 2,
+            185
+        )
+
+        dibujar_texto(
+            "Puntos conseguidos: " + str(puntos),
+            fuente,
+            (255, 255, 255),
+            ANCHO // 2,
+            255
+        )
+
+        dibujar_texto(
             "Presiona ESPACIO para reiniciar",
-            True,
-            blanco
+            fuente_chica,
+            (255, 255, 255),
+            ANCHO // 2,
+            305
         )
 
-        ventana.blit(
-            texto_game_over,
-            (ANCHO // 2 - 110, ALTO // 2 - 40)
-        )
-
-        ventana.blit(
-            texto_reiniciar,
-            (ANCHO // 2 - 150, ALTO // 2 + 20)
-        )
+    dibujar_boton_salir()
 
     pygame.display.update()
-
 
 pygame.quit()
