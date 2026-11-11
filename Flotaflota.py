@@ -60,17 +60,13 @@ TIEMPO_EXTRA_RELOJ = 5
 ANCHO_BARRA = 250
 ALTO_BARRA = 22
 
-# ----- Dificultad progresiva -----
-# La dificultad (0 a 1) sube con los puntos y se estabiliza en el maximo.
 PUNTOS_DIFICULTAD_MAX = 100
 
-# El tiempo corre mas rapido a medida que sube la dificultad (1.0 -> 1.8)
 VELOCIDAD_TIEMPO_EXTRA = 0.8
 
-# Segundos que Pau puede quedarse en una flota antes de que se hunda
 LIMITE_FLOTA_INICIAL = 4.0
 LIMITE_FLOTA_MINIMO = 1.4
-HUNDIMIENTO_MAX = 40  # pixeles que baja la flota antes de hundirse
+HUNDIMIENTO_MAX = 40
 
 fuente = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
 fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 50)
@@ -107,7 +103,6 @@ def y_pau_apoyado(flota):
 def crear_flota(anterior):
     d = dificultad()
 
-    # Con mas dificultad hay menos saltos cortos y mas saltos largos
     tipo_distancia = random.choices(
         ["corta", "media", "larga"],
         weights=[3 - 2.5 * d, 3, 2 + 4 * d]
@@ -120,7 +115,6 @@ def crear_flota(anterior):
     else:
         distancia = random.randint(125 + int(10 * d), 180 + int(30 * d))
 
-    # Mas diferencia de altura entre flotas a medida que avanzas
     amplitud = 15 + int(10 * d)
     cambio_altura = random.randint(-amplitud, amplitud)
 
@@ -149,7 +143,6 @@ def crear_plataformas_iniciales():
     return plataformas
 
 def crear_objeto(flota):
-    # Con mas dificultad aparecen menos relojes
     tipo = random.choices(
         ["moneda", "reloj"],
         weights=[2, 1 - 0.6 * dificultad()]
@@ -227,7 +220,6 @@ while jugando:
 
     if pantalla_actual == "juego" and not game_over:
 
-        # El tiempo corre mas rapido segun la dificultad
         velocidad_tiempo = 1 + VELOCIDAD_TIEMPO_EXTRA * dificultad()
         tiempo_gastado += dt * velocidad_tiempo
 
@@ -377,7 +369,6 @@ while jugando:
 
         if not game_over:
 
-            # Si Pau se queda mucho en una flota, esta se hunde
             if not saltando:
 
                 tiempo_en_flota += dt
@@ -479,7 +470,6 @@ while jugando:
                         monedas += 1
 
                     elif objeto["tipo"] == "reloj":
-                        # El reloj da menos tiempo a medida que avanzas
                         tiempo_extra += max(
                             2,
                             int(round(
@@ -492,7 +482,6 @@ while jugando:
             if y_pau > ALTO + 100:
                 game_over = True
 
-        # ----- Hundimiento de la flota actual (aviso visual) -----
         hundimiento = 0
 
         if not saltando:
@@ -621,26 +610,64 @@ while jugando:
 
         if game_over:
 
+            pygame.draw.rect(
+                ventana,
+                (25, 25, 25),
+                (100, 140, 600, 230),
+                border_radius=18
+            )
+
             texto = fuente_grande.render(
                 "GAME OVER",
                 True,
-                (255, 255, 255)
+                (255, 80, 80)
             )
 
             ventana.blit(
                 texto,
-                (ANCHO // 2 - texto.get_width() // 2, 190)
+                (ANCHO // 2 - texto.get_width() // 2, 155)
             )
 
-            texto2 = fuente_reinicio.render(
-                "Presiona R para volver a jugar",
+            texto_puntos_finales = fuente.render(
+                "Puntos conseguidos: " + str(puntos),
                 True,
                 (255, 255, 255)
             )
 
             ventana.blit(
-                texto2,
-                (ANCHO // 2 - texto2.get_width() // 2, 270)
+                texto_puntos_finales,
+                (
+                    ANCHO // 2 - texto_puntos_finales.get_width() // 2,
+                    225
+                )
+            )
+
+            texto_monedas_finales = fuente.render(
+                "Monedas conseguidas: " + str(monedas),
+                True,
+                (255, 255, 255)
+            )
+
+            ventana.blit(
+                texto_monedas_finales,
+                (
+                    ANCHO // 2 - texto_monedas_finales.get_width() // 2,
+                    260
+                )
+            )
+
+            texto_reinicio = fuente_reinicio.render(
+                "Presiona R para reiniciar",
+                True,
+                (255, 255, 255)
+            )
+
+            ventana.blit(
+                texto_reinicio,
+                (
+                    ANCHO // 2 - texto_reinicio.get_width() // 2,
+                    315
+                )
             )
 
     pygame.display.update()
