@@ -115,8 +115,7 @@ fondos = [
     )
 ]
 
-# Franjas de cambio de zona (PNG con transparencia). Bajan con el scroll.
-ALTO_CAMBIO = 220  # alto de la franja, ajustalo a tu gusto
+ALTO_CAMBIO = 220
 
 fondos_cambio = [
     pygame.transform.scale(
@@ -465,7 +464,6 @@ while jugando:
             for avion in aviones:
                 avion["rect"].y += diferencia
 
-            # La franja de cambio baja junto con el scroll
             if transicion is not None:
                 transicion["y"] += diferencia
 
@@ -575,8 +573,6 @@ while jugando:
 
     zona = obtener_zona(puntos)
 
-    # Transiciones: la franja aparece arriba unos puntos antes de cada nueva zona
-    # y baja con el scroll.
     limites_transicion = [47, 147, 297, 497]
 
     if pantalla_actual == "juego":
@@ -585,23 +581,20 @@ while jugando:
                 transicion = {"i": i, "y": -ALTO_CAMBIO}
                 transiciones_mostradas.add(i)
 
-    # ----- Fondo (con corte entre zona vieja y nueva durante la transicion) -----
     corte = None
 
     if transicion is None:
         ventana.blit(fondos[zona], (0, 0))
     else:
-        corte = transicion["y"] + ALTO_CAMBIO // 2  # linea donde cambia el fondo
+        corte = transicion["y"] + ALTO_CAMBIO // 2
 
         if corte >= ALTO:
             transicion = None
             corte = None
             ventana.blit(fondos[zona], (0, 0))
         else:
-            # fondo nuevo (arriba)
             ventana.blit(fondos[transicion["i"] + 1], (0, 0))
 
-            # fondo viejo (abajo de la linea)
             corte_y = max(0, corte)
             ventana.blit(
                 fondos[transicion["i"]],
@@ -609,7 +602,6 @@ while jugando:
                 pygame.Rect(0, corte_y, ANCHO, ALTO - corte_y)
             )
 
-    # ----- Plataformas -----
     for plataforma in plataformas:
         if transicion is not None and corte is not None:
             if plataforma.centery < corte:
@@ -635,7 +627,6 @@ while jugando:
         if tipo in imagenes_objetos:
             ventana.blit(imagenes_objetos[tipo], rect_objeto)
 
-    # ----- Franja de cambio (detras de Pau) -----
     if transicion is not None:
         ventana.blit(fondos_cambio[transicion["i"]], (0, transicion["y"]))
 
@@ -727,23 +718,65 @@ while jugando:
         ventana.blit(texto_efecto, (ANCHO - 230, 160))
 
     if game_over:
+
+        pygame.draw.rect(
+            ventana,
+            (25, 25, 25),
+            (100, 140, 600, 230),
+            border_radius=18
+        )
+
         texto = fuente_grande.render(
-            "GAME OVER", True, (255, 255, 255)
+            "GAME OVER",
+            True,
+            (255, 80, 80)
         )
 
         ventana.blit(
             texto,
-            (ANCHO // 2 - texto.get_width() // 2, 190)
+            (ANCHO // 2 - texto.get_width() // 2, 155)
         )
 
-        texto2 = fuente.render(
-            "Presiona R para volver a jugar",
-            True, (255, 255, 255)
+        texto_puntos_finales = fuente.render(
+            "Puntos conseguidos: " + str(puntos),
+            True,
+            (255, 255, 255)
         )
 
         ventana.blit(
-            texto2,
-            (ANCHO // 2 - texto2.get_width() // 2, 260)
+            texto_puntos_finales,
+            (
+                ANCHO // 2 - texto_puntos_finales.get_width() // 2,
+                225
+            )
+        )
+
+        texto_record_final = fuente.render(
+            "Record: " + str(record),
+            True,
+            (255, 255, 255)
+        )
+
+        ventana.blit(
+            texto_record_final,
+            (
+                ANCHO // 2 - texto_record_final.get_width() // 2,
+                265
+            )
+        )
+
+        texto_reinicio = fuente.render(
+            "Presiona R para reiniciar",
+            True,
+            (255, 255, 255)
+        )
+
+        ventana.blit(
+            texto_reinicio,
+            (
+                ANCHO // 2 - texto_reinicio.get_width() // 2,
+                315
+            )
         )
 
     pygame.display.update()
