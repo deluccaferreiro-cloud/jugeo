@@ -26,6 +26,9 @@ def obtener_zona(puntos):
         return 3
     return 4
 
+def indice_img_plat(z):
+    return 0 if z == 0 else (1 if z == 1 else 2)
+
 def tiempo_juego():
     transcurrido = (pygame.time.get_ticks() - tiempo_inicio) // 1000
     return max(0, DURACION_JUEGO + tiempo_extra - transcurrido)
@@ -35,6 +38,7 @@ def crear_objeto(plataforma):
         "moneda", "moneda", "moneda",
         "reloj", "resorte", "paraguas", "iman"
     ])
+
     x = random.randint(plataforma.left + 10, plataforma.right - 42)
     y = plataforma.top + MARGEN_SUPERIOR_PLAT - 32
 
@@ -45,10 +49,15 @@ def crear_objeto(plataforma):
         "plataforma": plataforma
     }
 
-def crear_nube_plataforma(y=None):
-    x = random.randint(0, ANCHO - ANCHO_NUBE)
+def crear_nube_plataforma(y=None, x=None):
+    if x is None:
+        x = random.randint(0, ANCHO - ANCHO_NUBE)
+
     if y is None:
         y = plataformas[-1].y - random.randint(80, 115)
+
+    x = max(0, min(x, ANCHO - ANCHO_NUBE))
+
     return pygame.Rect(x, y, ANCHO_NUBE, ALTO_NUBE)
 
 def crear_avion(y):
@@ -106,28 +115,18 @@ fondos = [
     )
 ]
 
+# Franjas de cambio de zona (PNG con transparencia). Bajan con el scroll.
+ALTO_CAMBIO = 220  # alto de la franja, ajustalo a tu gusto
+
 fondos_cambio = [
     pygame.transform.scale(
-        pygame.image.load(encontrar_archivo("cambio1.png")).convert(),
-        (ANCHO, ALTO)
-    ),
-    pygame.transform.scale(
-        pygame.image.load(encontrar_archivo("cambio2.png")).convert(),
-        (ANCHO, ALTO)
-    ),
-    pygame.transform.scale(
-        pygame.image.load(encontrar_archivo("cambio3.png")).convert(),
-        (ANCHO, ALTO)
-    ),
-    pygame.transform.scale(
-        pygame.image.load(encontrar_archivo("cambio4.png")).convert(),
-        (ANCHO, ALTO)
+        pygame.image.load(encontrar_archivo(f"cambio{i}.png")).convert_alpha(),
+        (ANCHO, ALTO_CAMBIO)
     )
+    for i in range(1, 5)
 ]
 
-tiempo_transicion = 0
-imagen_transicion = None
-DURACION_TRANSICION = 1500
+transicion = None
 
 imagen_instrucciones = pygame.transform.scale(
     pygame.image.load(encontrar_archivo("intro.jpg")).convert(),
@@ -221,6 +220,8 @@ def reiniciar_juego():
     global plataformas, nubes_plataformas, objetos, aviones
     global velocidades_plataformas, game_over
     global gravedad, tiempo_paraguas, tiempo_iman
+    global transicion
+    global transiciones_mostradas, contador_nubes
 
     x_pau = ANCHO // 2
     y_pau = ALTO - 150
@@ -238,6 +239,11 @@ def reiniciar_juego():
     tiempo_extra = 0
 
     tiempo_inicio = pygame.time.get_ticks()
+
+    transicion = None
+
+    transiciones_mostradas = set()
+    contador_nubes = 0
 
     plataformas = [
         pygame.Rect(
@@ -260,7 +266,7 @@ def reiniciar_juego():
         if random.random() < 0.25:
             velocidades_plataformas[id(nueva)] = random.choice([-2, 2])
 
-        if random.random() < 0.35:
+        if random.random() < 0.18:
             objetos.append(crear_objeto(nueva))
 
     game_over = False
@@ -459,6 +465,10 @@ while jugando:
             for avion in aviones:
                 avion["rect"].y += diferencia
 
+            # La franja de cambio baja junto con el scroll
+            if transicion is not None:
+                transicion["y"] += diferencia
+
         plataformas = [
             plataforma for plataforma in plataformas
             if plataforma.y < ALTO + 100
@@ -487,7 +497,7 @@ while jugando:
             if random.random() < 0.25:
                 velocidades_plataformas[id(nueva_plataforma)] = random.choice([-2, 2])
 
-            if random.random() < 0.35:
+            if random.random() < 0.18:
                 objetos.append(crear_objeto(nueva_plataforma))
 
             zona_actual = obtener_zona(puntos)
@@ -499,19 +509,19 @@ while jugando:
                     )
                 )
 
-            if zona_actual == 1 and random.random() < 0.80:
+            if zona_actual == 1 and random.random() < 0.35:
+                desplazamiento_nube = -115 if contador_nubes % 2 == 0 else 115
+
+                x_nube = nueva_plataforma.x + desplazamiento_nube
+                x_nube = max(0, min(x_nube, ANCHO - ANCHO_NUBE))
+
+                y_nube = nueva_plataforma.y + 55
+
                 nubes_plataformas.append(
-                    crear_nube_plataforma(
-                        nueva_plataforma.y + random.randint(10, 90)
-                    )
+                    crear_nube_plataforma(y_nube, x_nube)
                 )
 
-                if random.random() < 0.65:
-                    nubes_plataformas.append(
-                        crear_nube_plataforma(
-                            nueva_plataforma.y + random.randint(50, 120)
-                        )
-                    )
+                contador_nubes += 1
 
         ahora = pygame.time.get_ticks()
 
@@ -565,24 +575,51 @@ while jugando:
 
     zona = obtener_zona(puntos)
 
-    if zona != zona_anterior:
-        if zona > zona_anterior:
-            imagen_transicion = fondos_cambio[zona - 1]
-            tiempo_transicion = pygame.time.get_ticks()
+    # Transiciones: la franja aparece arriba unos puntos antes de cada nueva zona
+    # y baja con el scroll.
+    limites_transicion = [47, 147, 297, 497]
 
-        zona_anterior = zona
+    if pantalla_actual == "juego":
+        for i, limite in enumerate(limites_transicion):
+            if puntos >= limite and i not in transiciones_mostradas:
+                transicion = {"i": i, "y": -ALTO_CAMBIO}
+                transiciones_mostradas.add(i)
 
-    ventana.blit(fondos[zona], (0, 0))
+    # ----- Fondo (con corte entre zona vieja y nueva durante la transicion) -----
+    corte = None
 
-    if zona == 0:
-        imagen_plataforma = plataformas_imagenes[0]
-    elif zona == 1:
-        imagen_plataforma = plataformas_imagenes[1]
+    if transicion is None:
+        ventana.blit(fondos[zona], (0, 0))
     else:
-        imagen_plataforma = plataformas_imagenes[2]
+        corte = transicion["y"] + ALTO_CAMBIO // 2  # linea donde cambia el fondo
 
+        if corte >= ALTO:
+            transicion = None
+            corte = None
+            ventana.blit(fondos[zona], (0, 0))
+        else:
+            # fondo nuevo (arriba)
+            ventana.blit(fondos[transicion["i"] + 1], (0, 0))
+
+            # fondo viejo (abajo de la linea)
+            corte_y = max(0, corte)
+            ventana.blit(
+                fondos[transicion["i"]],
+                (0, corte_y),
+                pygame.Rect(0, corte_y, ANCHO, ALTO - corte_y)
+            )
+
+    # ----- Plataformas -----
     for plataforma in plataformas:
-        ventana.blit(imagen_plataforma, plataforma)
+        if transicion is not None and corte is not None:
+            if plataforma.centery < corte:
+                z_plat = transicion["i"] + 1
+            else:
+                z_plat = transicion["i"]
+        else:
+            z_plat = zona
+
+        ventana.blit(plataformas_imagenes[indice_img_plat(z_plat)], plataforma)
 
     if zona == 1:
         for nube in nubes_plataformas:
@@ -597,6 +634,10 @@ while jugando:
 
         if tipo in imagenes_objetos:
             ventana.blit(imagenes_objetos[tipo], rect_objeto)
+
+    # ----- Franja de cambio (detras de Pau) -----
+    if transicion is not None:
+        ventana.blit(fondos_cambio[transicion["i"]], (0, transicion["y"]))
 
     ventana.blit(pau, (x_pau, y_pau))
 
@@ -704,12 +745,6 @@ while jugando:
             texto2,
             (ANCHO // 2 - texto2.get_width() // 2, 260)
         )
-
-    if imagen_transicion is not None:
-        if pygame.time.get_ticks() - tiempo_transicion < DURACION_TRANSICION:
-            ventana.blit(imagen_transicion, (0, 0))
-        else:
-            imagen_transicion = None
 
     pygame.display.update()
 
