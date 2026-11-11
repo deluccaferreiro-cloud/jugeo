@@ -1,4 +1,3 @@
-
 import pygame
 import random
 import os
@@ -97,11 +96,42 @@ fuente_chica = pygame.font.Font(
 
 boton_jugar = pygame.Rect(300, 405, 200, 60)
 
+boton_salir = pygame.Rect(20, 435, 120, 45)
+color_salir = (190, 55, 55)
+color_salir_hover = (230, 65, 65)
+
 def dibujar_texto(texto, fuente_usada, color, centro_x, y):
     superficie = fuente_usada.render(texto, True, color)
     ventana.blit(
         superficie,
         (centro_x - superficie.get_width() // 2, y)
+    )
+
+def dibujar_boton_salir():
+    if boton_salir.collidepoint(pygame.mouse.get_pos()):
+        color_actual = color_salir_hover
+    else:
+        color_actual = color_salir
+
+    pygame.draw.rect(
+        ventana,
+        color_actual,
+        boton_salir,
+        border_radius=10
+    )
+
+    texto_salir = fuente_chica.render(
+        "SALIR",
+        True,
+        (255, 255, 255)
+    )
+
+    ventana.blit(
+        texto_salir,
+        (
+            boton_salir.centerx - texto_salir.get_width() // 2,
+            boton_salir.centery - texto_salir.get_height() // 2
+        )
     )
 
 def crear_ob(ob, numero_tubo=None):
@@ -173,13 +203,17 @@ while jugando:
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
 
-            if (
-                evento.button == 1
-                and pantalla_actual == "intro"
-                and boton_jugar.collidepoint(evento.pos)
-            ):
-                reiniciar_juego()
-                pantalla_actual = "juego"
+            if evento.button == 1:
+
+                if boton_salir.collidepoint(evento.pos):
+                    jugando = False
+
+                elif (
+                    pantalla_actual == "intro"
+                    and boton_jugar.collidepoint(evento.pos)
+                ):
+                    reiniciar_juego()
+                    pantalla_actual = "juego"
 
         if evento.type == pygame.KEYDOWN:
 
@@ -198,6 +232,9 @@ while jugando:
 
                 if evento.key == pygame.K_SPACE:
                     velocidad_y = salto
+
+    if not jugando:
+        break
 
     if pantalla_actual == "intro":
 
@@ -250,6 +287,8 @@ while jugando:
             boton_jugar.centerx,
             boton_jugar.centery - 20
         )
+
+        dibujar_boton_salir()
 
         pygame.display.update()
         continue
@@ -422,6 +461,8 @@ while jugando:
             ANCHO // 2,
             305
         )
+
+    dibujar_boton_salir()
 
     pygame.display.update()
 
