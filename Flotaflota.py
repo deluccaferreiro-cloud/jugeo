@@ -68,9 +68,9 @@ LIMITE_FLOTA_MINIMO = 1.4
 HUNDIMIENTO_MAX = 40
 
 fuente = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
-fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 50)
+fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 40)
 fuente_instrucciones = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
-fuente_reinicio = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 27)
+fuente_reinicio = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
 fuente_tiempo = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 15)
 
 COLOR_CELESTE = (135, 220, 255)
