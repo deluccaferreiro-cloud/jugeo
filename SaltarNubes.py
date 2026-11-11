@@ -1,3 +1,4 @@
+
 import pygame
 import os
 import random
@@ -196,9 +197,13 @@ fuente_grande = pygame.font.Font(encontrar_archivo("Cloudee.ttf"), 48)
 fuente_barra = pygame.font.Font(encontrar_archivo("Cloudee.ttf"), 26)
 
 boton_jugar = pygame.Rect(300, 390, 200, 60)
+boton_salir = pygame.Rect(20, 435, 120, 45)
 
 color_boton = (80, 190, 100)
 color_boton_hover = (50, 160, 75)
+
+color_salir = (190, 55, 55)
+color_salir_hover = (230, 65, 65)
 
 gravedad_normal = 0.45
 gravedad = gravedad_normal
@@ -212,6 +217,30 @@ tiempo_paraguas = 0
 tiempo_iman = 0
 
 record = 0
+
+def dibujar_boton_salir():
+    color_actual = (
+        color_salir_hover
+        if boton_salir.collidepoint(pygame.mouse.get_pos())
+        else color_salir
+    )
+
+    pygame.draw.rect(
+        ventana,
+        color_actual,
+        boton_salir,
+        border_radius=10
+    )
+
+    texto_salir = fuente.render("SALIR", True, (255, 255, 255))
+
+    ventana.blit(
+        texto_salir,
+        (
+            boton_salir.centerx - texto_salir.get_width() // 2,
+            boton_salir.centery - texto_salir.get_height() // 2
+        )
+    )
 
 def reiniciar_juego():
     global x_pau, y_pau, velocidad_x, velocidad_y
@@ -292,10 +321,14 @@ while jugando:
             jugando = False
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
-            if evento.button == 1 and pantalla_actual == "instrucciones":
-                if boton_jugar.collidepoint(evento.pos):
-                    reiniciar_juego()
-                    pantalla_actual = "juego"
+            if evento.button == 1:
+                if boton_salir.collidepoint(evento.pos):
+                    jugando = False
+
+                elif pantalla_actual == "instrucciones":
+                    if boton_jugar.collidepoint(evento.pos):
+                        reiniciar_juego()
+                        pantalla_actual = "juego"
 
         if evento.type == pygame.KEYDOWN:
             if pantalla_actual == "juego" and not game_over:
@@ -315,6 +348,9 @@ while jugando:
 
             if evento.key == pygame.K_RIGHT and velocidad_x > 0:
                 velocidad_x = 0
+
+    if not jugando:
+        break
 
     if pantalla_actual == "instrucciones":
         ventana.blit(imagen_instrucciones, (0, 0))
@@ -360,6 +396,8 @@ while jugando:
                 boton_jugar.centery - texto_boton.get_height() // 2
             )
         )
+
+        dibujar_boton_salir()
 
         pygame.display.update()
         continue
@@ -718,7 +756,6 @@ while jugando:
         ventana.blit(texto_efecto, (ANCHO - 230, 160))
 
     if game_over:
-
         pygame.draw.rect(
             ventana,
             (25, 25, 25),
@@ -778,6 +815,8 @@ while jugando:
                 315
             )
         )
+
+    dibujar_boton_salir()
 
     pygame.display.update()
 
