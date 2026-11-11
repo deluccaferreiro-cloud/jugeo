@@ -1,3 +1,4 @@
+
 import pygame
 import os
 import random
@@ -59,6 +60,18 @@ TIEMPO_EXTRA_RELOJ = 5
 ANCHO_BARRA = 250
 ALTO_BARRA = 22
 
+# ----- Dificultad progresiva -----
+# La dificultad (0 a 1) sube con los puntos y se estabiliza en el maximo.
+PUNTOS_DIFICULTAD_MAX = 100
+
+# El tiempo corre mas rapido a medida que sube la dificultad (1.0 -> 1.8)
+VELOCIDAD_TIEMPO_EXTRA = 0.8
+
+# Segundos que Pau puede quedarse en una flota antes de que se hunda
+LIMITE_FLOTA_INICIAL = 4.0
+LIMITE_FLOTA_MINIMO = 1.4
+HUNDIMIENTO_MAX = 40  # pixeles que baja la flota antes de hundirse
+
 fuente = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
 fuente_grande = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 50)
 fuente_instrucciones = pygame.font.Font(encontrar_archivo("HelloSummerPersonalUse.ttf"), 20)
@@ -71,6 +84,20 @@ boton_jugar = pygame.Rect(300, 405, 200, 60)
 color_boton = (80, 190, 100)
 color_boton_hover = (50, 160, 75)
 
+def dificultad():
+    return min(1.0, puntos / PUNTOS_DIFICULTAD_MAX)
+
+def nivel_actual():
+    return 1 + int(dificultad() * 9)
+
+def limite_flota():
+    return LIMITE_FLOTA_INICIAL - (
+        LIMITE_FLOTA_INICIAL - LIMITE_FLOTA_MINIMO
+    ) * dificultad()
+
+def probabilidad_objeto():
+    return 0.4 - 0.15 * dificultad()
+
 def superficie_flota(flota):
     return flota.top + MARGEN_SUPERIOR_FLOTA
 
@@ -78,27 +105,27 @@ def y_pau_apoyado(flota):
     return superficie_flota(flota) - ALTO_PAU + MARGEN_PIES_PAU
 
 def crear_flota(anterior):
-    tipo_distancia = random.choice([
-        "corta", "corta", "media", "media",
-        "larga", "corta", "larga", "media"
-    ])
+    d = dificultad()
+
+    # Con mas dificultad hay menos saltos cortos y mas saltos largos
+    tipo_distancia = random.choices(
+        ["corta", "media", "larga"],
+        weights=[3 - 2.5 * d, 3, 2 + 4 * d]
+    )[0]
 
     if tipo_distancia == "corta":
-        distancia = random.randint(25, 50)
+        distancia = random.randint(25 + int(15 * d), 50 + int(20 * d))
     elif tipo_distancia == "media":
-        distancia = random.randint(55, 95)
+        distancia = random.randint(55 + int(15 * d), 95 + int(15 * d))
     else:
-        distancia = random.randint(125, 180)
+        distancia = random.randint(125 + int(10 * d), 180 + int(30 * d))
 
-    cambio_altura = random.choice([
-        random.randint(-12, -4),
-        random.randint(4, 12),
-        random.randint(-5, 5),
-        random.randint(-15, 15)
-    ])
+    # Mas diferencia de altura entre flotas a medida que avanzas
+    amplitud = 15 + int(10 * d)
+    cambio_altura = random.randint(-amplitud, amplitud)
 
     nueva_y = anterior.y + cambio_altura
-    nueva_y = max(350, min(390, nueva_y))
+    nueva_y = max(350 - int(10 * d), min(390 + int(5 * d), nueva_y))
 
     return pygame.Rect(
         anterior.right + distancia,
@@ -122,7 +149,11 @@ def crear_plataformas_iniciales():
     return plataformas
 
 def crear_objeto(flota):
-    tipo = random.choice(["moneda", "moneda", "reloj"])
+    # Con mas dificultad aparecen menos relojes
+    tipo = random.choices(
+        ["moneda", "reloj"],
+        weights=[2, 1 - 0.6 * dificultad()]
+    )[0]
 
     rect_objeto = pygame.Rect(
         flota.centerx - 17,
@@ -140,18 +171,23 @@ def agregar_objetos():
     objetos = []
 
     for flota in flota_flota_list:
-        if random.random() < 0.4:
+        if random.random() < probabilidad_objeto():
             objetos.append(crear_objeto(flota))
 
     return objetos
+
+gravedad = 0.6
+f_salto_normal = -9
+f_doble_salto = -15
 
 def reiniciar_juego():
     global x_pau, y_pau, velocidad_y, saltando
     global puntos, indice_actual, indice_destino
     global camara_x, destino_x, flota_flota_list
-    global game_over, tiempo_inicio, tiempo_restante
+    global game_over, tiempo_gastado, tiempo_restante
     global caer_al_agua, objetivo_caida_x
     global objetos, monedas, tiempo_extra
+    global tiempo_en_flota, hundida_idx
 
     x_pau = 135 + OFFSET_X_APOYO
     velocidad_y = 0
@@ -172,54 +208,31 @@ def reiniciar_juego():
 
     y_pau = y_pau_apoyado(flota_flota_list[0])
 
-    tiempo_inicio = pygame.time.get_ticks()
+    tiempo_gastado = 0.0
     tiempo_restante = TIEMPO_MAXIMO
+
+    tiempo_en_flota = 0.0
+    hundida_idx = None
 
     caer_al_agua = False
     objetivo_caida_x = x_pau
 
     game_over = False
 
-gravedad = 0.6
-f_salto_normal = -9
-f_doble_salto = -15
-
-x_pau = 135 + OFFSET_X_APOYO
-velocidad_y = 0
-saltando = False
-
-flota_flota_list = crear_plataformas_iniciales()
-objetos = agregar_objetos()
-
-y_pau = y_pau_apoyado(flota_flota_list[0])
-
-indice_actual = 0
-indice_destino = 0
-
-destino_x = x_pau
-camara_x = 0
-puntos = 0
-monedas = 0
-tiempo_extra = 0
-
-caer_al_agua = False
-objetivo_caida_x = x_pau
-
-tiempo_inicio = pygame.time.get_ticks()
-tiempo_restante = TIEMPO_MAXIMO
+reiniciar_juego()
 
 while jugando:
 
-    reloj.tick(60)
+    dt = min(reloj.tick(60) / 1000, 0.05)
 
     if pantalla_actual == "juego" and not game_over:
 
-        tiempo_transcurrido = (
-            pygame.time.get_ticks() - tiempo_inicio
-        ) / 1000
+        # El tiempo corre mas rapido segun la dificultad
+        velocidad_tiempo = 1 + VELOCIDAD_TIEMPO_EXTRA * dificultad()
+        tiempo_gastado += dt * velocidad_tiempo
 
         tiempo_restante = max(
-            0, TIEMPO_MAXIMO + tiempo_extra - tiempo_transcurrido
+            0, TIEMPO_MAXIMO + tiempo_extra - tiempo_gastado
         )
 
         if tiempo_restante <= 0:
@@ -320,7 +333,9 @@ while jugando:
             "PAU pueda avanzar, utiliuza las flechas derecha e izquierda del teclado",
             "Flecha izquierda: salto normal (1 punto)",
             "Flecha derecha: salto doble (2 puntos)",
-            "TIP: agarrar los objetos que estan en los flota"
+            "TIP: agarrar los objetos que estan en los flota",
+            "Cada vez es mas dificil: mas distancia y el tiempo corre mas rapido",
+            "Cuidado: las flotas se hunden si te quedas mucho tiempo en ellas"
         ]
 
         for i, linea in enumerate(instrucciones):
@@ -361,6 +376,18 @@ while jugando:
     elif pantalla_actual == "juego":
 
         if not game_over:
+
+            # Si Pau se queda mucho en una flota, esta se hunde
+            if not saltando:
+
+                tiempo_en_flota += dt
+
+                if tiempo_en_flota >= limite_flota():
+                    hundida_idx = indice_actual
+                    saltando = True
+                    caer_al_agua = True
+                    objetivo_caida_x = x_pau
+                    velocidad_y = 0
 
             if saltando:
 
@@ -421,6 +448,7 @@ while jugando:
                         velocidad_y = 0
                         saltando = False
                         indice_actual = indice_destino
+                        tiempo_en_flota = 0.0
 
             if x_pau > camara_x + 400:
                 camara_x = x_pau - 400
@@ -431,7 +459,7 @@ while jugando:
                 nueva_flota = crear_flota(anterior)
                 flota_flota_list.append(nueva_flota)
 
-                if random.random() < 0.4:
+                if random.random() < probabilidad_objeto():
                     objetos.append(crear_objeto(nueva_flota))
 
             rect_pau = pygame.Rect(
@@ -451,24 +479,48 @@ while jugando:
                         monedas += 1
 
                     elif objeto["tipo"] == "reloj":
-                        tiempo_extra += TIEMPO_EXTRA_RELOJ
+                        # El reloj da menos tiempo a medida que avanzas
+                        tiempo_extra += max(
+                            2,
+                            int(round(
+                                TIEMPO_EXTRA_RELOJ - 3 * dificultad()
+                            ))
+                        )
 
                     objetos.remove(objeto)
 
             if y_pau > ALTO + 100:
                 game_over = True
 
+        # ----- Hundimiento de la flota actual (aviso visual) -----
+        hundimiento = 0
+
+        if not saltando:
+            fraccion = tiempo_en_flota / limite_flota()
+
+            if fraccion > 0.5:
+                hundimiento = int(
+                    (fraccion - 0.5) / 0.5 * HUNDIMIENTO_MAX
+                )
+
         ventana.blit(fondo, (0, 0))
 
-        for flotaflota in flota_flota_list:
+        for i, flotaflota in enumerate(flota_flota_list):
 
             x_pantalla = flotaflota.x - camara_x
 
             if -ANCHO_FLOTA <= x_pantalla <= ANCHO:
 
+                if i == hundida_idx:
+                    desplazamiento_y = HUNDIMIENTO_MAX
+                elif i == indice_actual and not saltando:
+                    desplazamiento_y = hundimiento
+                else:
+                    desplazamiento_y = 0
+
                 ventana.blit(
                     flota_flota_imagen,
-                    (int(x_pantalla), flotaflota.y)
+                    (int(x_pantalla), flotaflota.y + desplazamiento_y)
                 )
 
         for objeto in objetos:
@@ -494,7 +546,7 @@ while jugando:
 
         ventana.blit(
             pau,
-            (int(x_pau - camara_x), int(y_pau))
+            (int(x_pau - camara_x), int(y_pau + hundimiento))
         )
 
         texto_puntos = fuente_tiempo.render(
@@ -510,6 +562,13 @@ while jugando:
             (255, 255, 255)
         )
         ventana.blit(texto_monedas, (20, 50))
+
+        texto_nivel = fuente_tiempo.render(
+            "Nivel: " + str(nivel_actual()),
+            True,
+            (255, 255, 255)
+        )
+        ventana.blit(texto_nivel, (20, 85))
 
         texto_tiempo = fuente_tiempo.render(
             "Tiempo: " + str(int(tiempo_restante)) + " s",
