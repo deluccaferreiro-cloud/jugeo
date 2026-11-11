@@ -1,4 +1,3 @@
-
 import pygame
 import os
 import random
@@ -79,6 +78,37 @@ COLOR_CELESTE = (135, 220, 255)
 boton_jugar = pygame.Rect(300, 405, 200, 60)
 color_boton = (80, 190, 100)
 color_boton_hover = (50, 160, 75)
+
+boton_salir = pygame.Rect(20, 435, 120, 45)
+color_salir = (190, 55, 55)
+color_salir_hover = (230, 65, 65)
+
+def dibujar_boton_salir():
+    if boton_salir.collidepoint(pygame.mouse.get_pos()):
+        color_actual = color_salir_hover
+    else:
+        color_actual = color_salir
+
+    pygame.draw.rect(
+        ventana,
+        color_actual,
+        boton_salir,
+        border_radius=10
+    )
+
+    texto_salir = fuente.render(
+        "SALIR",
+        True,
+        (255, 255, 255)
+    )
+
+    ventana.blit(
+        texto_salir,
+        (
+            boton_salir.centerx - texto_salir.get_width() // 2,
+            boton_salir.centery - texto_salir.get_height() // 2
+        )
+    )
 
 def dificultad():
     return min(1.0, puntos / PUNTOS_DIFICULTAD_MAX)
@@ -237,11 +267,16 @@ while jugando:
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
 
-            if evento.button == 1 and pantalla_actual == "instrucciones":
+            if evento.button == 1:
 
-                if boton_jugar.collidepoint(evento.pos):
-                    reiniciar_juego()
-                    pantalla_actual = "juego"
+                if boton_salir.collidepoint(evento.pos):
+                    jugando = False
+
+                elif pantalla_actual == "instrucciones":
+
+                    if boton_jugar.collidepoint(evento.pos):
+                        reiniciar_juego()
+                        pantalla_actual = "juego"
 
         if evento.type == pygame.KEYDOWN:
 
@@ -307,6 +342,9 @@ while jugando:
                 reiniciar_juego()
                 pantalla_actual = "juego"
 
+    if not jugando:
+        break
+
     if pantalla_actual == "instrucciones":
 
         ventana.blit(imagen_instrucciones, (0, 0))
@@ -321,13 +359,10 @@ while jugando:
         )
 
         instrucciones = [
-            "Objetivo: saltar de flota en flota, para que PAU no caiga al agua",
-            "PAU pueda avanzar, utiliuza las flechas derecha e izquierda del teclado",
-            "Flecha izquierda: salto normal (1 punto)",
+            "Evita que PAU caiga al agua, saltando de flota en flota",
+            "PAU se mueve con las flechas izquierda(salto normal)",
+            "y flecha derecha (doble salto)",
             "Flecha derecha: salto doble (2 puntos)",
-            "TIP: agarrar los objetos que estan en los flota",
-            "Cada vez es mas dificil: mas distancia y el tiempo corre mas rapido",
-            "Cuidado: las flotas se hunden si te quedas mucho tiempo en ellas"
         ]
 
         for i, linea in enumerate(instrucciones):
@@ -364,6 +399,8 @@ while jugando:
                 boton_jugar.centery - texto_boton.get_height() // 2
             )
         )
+
+        dibujar_boton_salir()
 
     elif pantalla_actual == "juego":
 
@@ -669,6 +706,8 @@ while jugando:
                     315
                 )
             )
+
+        dibujar_boton_salir()
 
     pygame.display.update()
 
