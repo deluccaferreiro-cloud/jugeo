@@ -1,16 +1,25 @@
+
 import pygame
 import random
 import os
+import principal
+import sys
 
 def encontrar_archivo(nombre):
-    carpeta_raiz = os.path.dirname(__file__)
-    return os.path.join(
+    carpeta_raiz = os.path.dirname(os.path.abspath(__file__))
+
+    ruta = os.path.join(
         carpeta_raiz,
         "assets",
         "minijuegos",
         "flappy",
         nombre
     )
+
+    print("Buscando:", ruta)
+    print("Existe:", os.path.exists(ruta))
+
+    return ruta
 
 def cargar_imagen(nombre, tamaño, transparencia=True):
     imagen = pygame.image.load(encontrar_archivo(nombre))
@@ -25,6 +34,7 @@ def cargar_imagen(nombre, tamaño, transparencia=True):
 pygame.init()
 
 jugando = True
+volver_menu = False
 game_over = False
 pantalla_actual = "intro"
 
@@ -199,7 +209,8 @@ while jugando:
     for evento in pygame.event.get():
 
         if evento.type == pygame.QUIT:
-            jugando = False
+            pygame.quit()
+            sys.exit()
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
 
@@ -207,6 +218,7 @@ while jugando:
 
                 if boton_salir.collidepoint(evento.pos):
                     jugando = False
+                    volver_menu = True
 
                 elif (
                     pantalla_actual == "intro"
@@ -462,4 +474,8 @@ while jugando:
 
     pygame.display.update()
 
-pygame.quit()
+if volver_menu:
+    principal.ejecutar()
+else:
+    pygame.quit()
+    sys.exit()

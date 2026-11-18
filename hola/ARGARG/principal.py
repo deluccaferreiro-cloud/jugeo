@@ -1661,19 +1661,24 @@ COLORES_COMIDA = {
 }
 COLORES_SIMON = [(220, 60, 60), (60, 180, 80), (70, 110, 230), (240, 200, 50)]
 
-
 def lanzar_flappy():
     global monedas, jugar, subpantalla
+
     try:
         import Flappy_Pau
     except ImportError:
         avisar("No se encontró Flappy_Pau.py")
         return
+
     resultado = Flappy_Pau.ejecutar_flappy()
+
     subpantalla = "minijuegos"
+
     surf = pygame.display.get_surface()
+
     if surf is None or surf.get_size() != (ancho, alto):
-        crear_ventana()           # por si el minijuego cambió la ventana
+        crear_ventana()
+
     if isinstance(resultado, int) and resultado > 0:
         monedas += resultado
         jugar = min(100, jugar + 20)
@@ -1683,6 +1688,7 @@ def lanzar_flappy():
         guardar()
         avisar(f"¡Ganaste {resultado} monedas!")
         sonar("moneda")
+
 def lanzar_nube():
     global monedas,jugar, subpantalla
     try: 
