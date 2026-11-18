@@ -1616,50 +1616,15 @@ def lanzar_flappy():
         avisar("No se encontró Flappy_Pau.py")
         return
 
-    resultado = Flappy_Pau.ejecutar_flappy()
+    resultado = Flappy_Pau.ejecutando
 
     subpantalla = "minijuegos"
 
     surf = pygame.display.get_surface()
 
     if surf is None or surf.get_size() != (ancho, alto):
-<<<<<<< HEAD:hola/ARGARG/principal.py
-        crear_ventana()
 
-=======
-        crear_ventana()          
->>>>>>> 8e8b223a5a06d4683c3b0c19ce290c3382b71d91:Expo-Huergo/PAU/principal.py
-    if isinstance(resultado, int) and resultado > 0:
-        monedas += resultado
-        jugar = min(100, jugar + 20)
-        progreso_mision("minijuegos")
-        stats["minijuegos"] += 1
-        ganar_xp(5 + resultado // 2)
-        guardar()
-        avisar(f"¡Ganaste {resultado} monedas!")
-        sonar("moneda")
 
-def lanzar_nube():
-    global monedas,jugar, subpantalla
-    try: 
-        import SaltarNubes
-    except ImportError:
-        avisar("No se encontro SaltarNubes.py")
-        return
-    resultado= SaltarNubes.ejecutar_saltar()
-    subpantalla= "minijuegos"
-    surf = pygame.display.get_surface()
-    if surf is None or surf.get_size() != (ancho, alto):
-            crear_ventana()           # por si el minijuego cambió la ventana
-    if isinstance(resultado, int) and resultado > 0:
-            monedas += resultado
-            jugar = min(100, jugar + 20)
-            progreso_mision("minijuegos")
-            stats["minijuegos"] += 1
-            ganar_xp(5 + resultado // 2)
-            guardar()
-            avisar(f"¡Ganaste {resultado} monedas!")
-            sonar("moneda")
 def lanzar_flota():
     global monedas,jugar, subpantalla
     try: 
