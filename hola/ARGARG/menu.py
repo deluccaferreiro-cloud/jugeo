@@ -23,9 +23,6 @@ COLOR_TEXTO_BOTON = (60, 90, 140)
 COLOR_TITULO = (255, 255, 255)
 COLOR_SOMBRA = (60, 70, 120)
 
-# ---------------------------------------------------------------------------
-# FONDO
-# ---------------------------------------------------------------------------
 fondo_img = principal.cargar_imagen("PAU.png", tamaño=(ancho, alto), opaca=True)
 TIENE_FONDO = fondo_img is not None
 
@@ -81,12 +78,12 @@ def texto_con_sombra(sup, texto, fuente, color, centro, sombra=COLOR_SOMBRA, des
 
 def dibujar_titulo(sup, t):
     if TIENE_FONDO:
-        return          # la imagen PAU.png ya trae su propio título
+        return       
     rebote = int(math.sin(t * 2.2) * 6)
     texto_con_sombra(sup, "PAU", fuente_titulo, COLOR_TITULO, (400, 90 + rebote))
     texto_con_sombra(sup, "tu mascota virtual", fuente_sub, (255, 255, 255),
                      (400, 150), desp=2)
-    # Pau a un lado, respirando
+   
     img = principal.pou_feliz
     esc = 1.0 + math.sin(t * 3) * 0.02
     w, h = img.get_size()
@@ -94,9 +91,6 @@ def dibujar_titulo(sup, t):
     sup.blit(img, img.get_rect(center=(125, 400 + int(math.sin(t * 3) * 5))))
 
 
-# ---------------------------------------------------------------------------
-# BOTONES
-# ---------------------------------------------------------------------------
 class Boton:
     def __init__(self, rect, texto):
         self.rect = pygame.Rect(rect)
@@ -135,9 +129,6 @@ botones_confirmar = [Boton((200, 330, 180, 52), "Sí, borrar"),
 boton_volver_ins = Boton((300, 540, 200, 42), "Volver")
 cruz = pygame.Rect(740, 10, 40, 40)
 
-# ---------------------------------------------------------------------------
-# INSTRUCCIONES (con scroll)
-# ---------------------------------------------------------------------------
 SECCIONES = [
     ("Objetivo", "Cuida a Pau: que ninguna barra llegue a cero. Si se desmaya, "
                  "puedes revivirla con monedas. El progreso se guarda solo."),
@@ -159,7 +150,7 @@ SECCIONES = [
 
 
 def construir_instrucciones():
-    lineas = []          # (texto, tipo)
+    lineas = []        
     for titulo, cuerpo in SECCIONES:
         lineas.append((titulo, "titulo"))
         actual = ""
@@ -208,7 +199,7 @@ def dibujar_instrucciones(sup, t, dt, pos):
         y += ALTO_LINEA[tipo]
     sup.set_clip(None)
 
-    if ALTO_TOTAL_INS > AREA_INS.height:      # barra de scroll
+    if ALTO_TOTAL_INS > AREA_INS.height:      
         maximo = ALTO_TOTAL_INS - AREA_INS.height + 10
         alto_b = max(30, int(AREA_INS.height * AREA_INS.height / ALTO_TOTAL_INS))
         yb = AREA_INS.y + int((AREA_INS.height - alto_b) * (scroll_ins / maximo))
@@ -219,9 +210,6 @@ def dibujar_instrucciones(sup, t, dt, pos):
     boton_volver_ins.dibujar(sup)
 
 
-# ---------------------------------------------------------------------------
-# PANTALLAS
-# ---------------------------------------------------------------------------
 def dibujar_menu(sup, t, dt, pos):
     dibujar_fondo(sup, t)
     dibujar_titulo(sup, t)
@@ -287,15 +275,12 @@ velo.set_alpha(120)
 velo.fill((20, 20, 50))
 snapshot = pygame.Surface((ancho, alto))
 
-# ---------------------------------------------------------------------------
-# TRANSICIONES (fundido a negro)
-# ---------------------------------------------------------------------------
 negro = pygame.Surface((ancho, alto))
 negro.fill((0, 0, 0))
 pantalla_actual = "menu"
 destino = None
-fade = 0.0              # 0..255
-fade_fase = None        # None / "out" / "in"
+fade = 0.0             
+fade_fase = None        
 VEL_FADE = 1300.0
 
 
@@ -343,10 +328,6 @@ def alternar_pantalla_completa():
     except pygame.error:
         pass
 
-
-# ---------------------------------------------------------------------------
-# BUCLE PRINCIPAL
-# ---------------------------------------------------------------------------
 ejecutando = True
 tiempo = 0.0
 
@@ -355,7 +336,7 @@ while ejecutando:
     tiempo += dt
     ventana = pygame.display.get_surface()
     pos = pygame.mouse.get_pos()
-    bloqueado = fade_fase is not None       # sin clicks durante el fundido
+    bloqueado = fade_fase is not None       
 
     for evento in pygame.event.get():
 
