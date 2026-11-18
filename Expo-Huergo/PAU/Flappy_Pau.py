@@ -465,4 +465,3 @@ while jugando:
     pygame.display.update()
 
 pygame.quit()
-sys.exit()
