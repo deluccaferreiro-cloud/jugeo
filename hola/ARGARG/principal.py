@@ -223,8 +223,10 @@ PRENDAS = [
     {"nombre": "tridente de diablo", "archivo": "camiseta.png", "slot": "cuerpo", "precio": 0,
     "offset": (0, 50), "tam": 150},
     {"nombre": "Paleta de pintor", "archivo": "sombrero.png", "slot": "mano", "precio": 0},
-    {"nombre": "Uniceja", "archivo": "bufanda.png", "slot": "cara", "precio": 0},
-    {"nombre": "antorcha", "archivo": "vestido.png", "slot": "mano", "precio": 0},
+    {"nombre": "Uniceja", "archivo": "bufanda.png", "slot": "cara", "precio": 0,
+    "offset": (0, -30), "tam": 120},
+    {"nombre": "Antorcha", "archivo": "vestido.png", "slot": "mano", "precio": 0,
+    "offset": (70, 0), "tam": 100},
     {"nombre": "Lentes swifties", "archivo": "corona.png", "slot": "cara", "precio": 0},
     # --- Accesorios y disfraces ---
     {"nombre": "Orejas de gato", "archivo": "tutu.png", "slot": "cuerpo", "precio": 0,
