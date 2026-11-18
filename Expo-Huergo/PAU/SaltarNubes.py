@@ -1,12 +1,24 @@
 
 import pygame
 import os
+
+try:
+    import sangre   # modo diablo: sangre en pantalla
+except ImportError:
+    sangre = None
 import random
 import math
 
 def encontrar_archivo(nombre):
-    carpeta_raiz = os.path.dirname(__file__)
-    return os.path.join(carpeta_raiz, "assets", "minijuegos", "salto_nubes", nombre)
+    # Busca la carpeta "assets" subiendo desde este archivo (el juego se movió de carpeta).
+    carpeta = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(5):
+        ruta = os.path.join(carpeta, "assets", "minijuegos", "salto_nubes", nombre)
+        if os.path.isfile(ruta):
+            return ruta
+        carpeta = os.path.dirname(carpeta)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "assets", "minijuegos", "salto_nubes", nombre)
 
 def crear_plataforma(anterior):
     y = anterior.y - random.randint(85, 110)
@@ -399,6 +411,8 @@ while jugando:
 
         dibujar_boton_salir()
 
+        if sangre:
+            sangre.aplicar(ventana)
         pygame.display.update()
         continue
 
@@ -818,6 +832,9 @@ while jugando:
 
     dibujar_boton_salir()
 
+    if sangre:
+        sangre.aplicar(ventana)
     pygame.display.update()
 
+print("RESULTADO", puntos, flush=True)   # lo lee el juego principal
 pygame.quit()

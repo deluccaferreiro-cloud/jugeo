@@ -2,15 +2,21 @@ import pygame
 import random
 import os
 
+try:
+    import sangre   # modo diablo: sangre en pantalla
+except ImportError:
+    sangre = None
+
 def encontrar_archivo(nombre):
-    carpeta_raiz = os.path.dirname(__file__)
-    return os.path.join(
-        carpeta_raiz,
-        "assets",
-        "minijuegos",
-        "comidaquecae",
-        nombre
-    )
+    # Busca la carpeta "assets" subiendo desde este archivo (el juego se movió de carpeta).
+    carpeta = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(5):
+        ruta = os.path.join(carpeta, "assets", "minijuegos", "comidaquecae", nombre)
+        if os.path.isfile(ruta):
+            return ruta
+        carpeta = os.path.dirname(carpeta)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "assets", "minijuegos", "comidaquecae", nombre)
 
 def cargar_imagen(nombre, tamaño, transparencia=True):
     imagen = pygame.image.load(encontrar_archivo(nombre))
@@ -297,6 +303,8 @@ while jugando:
 
         dibujar_boton_salir()
 
+        if sangre:
+            sangre.aplicar(ventana)
         pygame.display.update()
         continue
 
@@ -466,6 +474,9 @@ while jugando:
 
     dibujar_boton_salir()
 
+    if sangre:
+        sangre.aplicar(ventana)
     pygame.display.update()
 
+print("RESULTADO", puntaje_comidita, flush=True)   # lo lee el juego principal
 pygame.quit()

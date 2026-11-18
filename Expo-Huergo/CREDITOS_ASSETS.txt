@@ -1,0 +1,29 @@
+Assets agregados (velador, inodoro, poción y pedos)
+====================================================
+
+objetos/velador.png
+  "Table lamp turn off" - Openclipart, dominio público
+  https://openclipart.org/detail/190852/table-lamp-turn-off
+
+objetos/mesita.png
+  "Wooden side table from Glitch" - Openclipart, dominio público
+  https://openclipart.org/detail/291265/wooden-side-table-from-glitch
+
+objetos/inodoro.png
+  "Toilet" (3D) - Microsoft Fluent UI Emoji, licencia MIT (recoloreado a blanco)
+  https://github.com/microsoft/fluentui-emoji
+
+objetos/pocion_matadora.png
+  "Lava Potion" - OpenGameArt, CC0 (recoloreada a rojo sangre)
+  https://opengameart.org/content/lava-potion
+
+sonidos/pedo.wav
+  "Human fart.wav" - Subhashish Panigrahi, Wikimedia Commons, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Human_fart.wav
+
+sonidos/pedo_largo.wav
+  "Flatulence.wav" - JohnSumisu, Wikimedia Commons, CC BY-SA 3.0
+  https://commons.wikimedia.org/wiki/File:Flatulence.wav
+
+sonidos/furia.wav
+  Generado por código para este juego.
