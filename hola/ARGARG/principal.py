@@ -6,6 +6,7 @@ import math
 import random
 import time
 
+
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
 ruta_minijuegos = os.path.join(ruta_actual, "..", "minijuegos")
 sys.path.append(os.path.normpath(ruta_minijuegos))
@@ -1627,6 +1628,48 @@ def lanzar_flappy():
         guardar()
         avisar(f"¡Ganaste {resultado} monedas!")
         sonar("moneda")
+def lanzar_nube():
+    global monedas,jugar, subpantalla
+    try: 
+        import SaltarNubes
+    except ImportError:
+        avisar("No se encontro SaltarNubes.py")
+        return
+    resultado= SaltarNubes.ejecutar_saltar()
+    subpantalla= "minijuegos"
+    surf = pygame.display.get_surface()
+    if surf is None or surf.get_size() != (ancho, alto):
+            crear_ventana()           # por si el minijuego cambió la ventana
+    if isinstance(resultado, int) and resultado > 0:
+            monedas += resultado
+            jugar = min(100, jugar + 20)
+            progreso_mision("minijuegos")
+            stats["minijuegos"] += 1
+            ganar_xp(5 + resultado // 2)
+            guardar()
+            avisar(f"¡Ganaste {resultado} monedas!")
+            sonar("moneda")
+def lanzar_flota():
+    global monedas,jugar, subpantalla
+    try: 
+        import Flotaflota
+    except ImportError:
+            avisar("No se encontro Flotaflota.py")
+            return
+    resultado= Flotaflota.ejecutar_flota()
+    subpantalla= "minijuegos"
+    surf = pygame.display.get_surface()
+    if surf is None or surf.get_size() != (ancho, alto):
+                crear_ventana()           # por si el minijuego cambió la ventana
+    if isinstance(resultado, int) and resultado > 0:
+                monedas += resultado
+                jugar = min(100, jugar + 20)
+                progreso_mision("minijuegos")
+                stats["minijuegos"] += 1
+                ganar_xp(5 + resultado // 2)
+                guardar()
+                avisar(f"¡Ganaste {resultado} monedas!")
+                sonar("moneda")
 
 
 def iniciar_minijuego(clave):
