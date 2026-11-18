@@ -1624,51 +1624,27 @@ def lanzar_flappy():
 
     if surf is None or surf.get_size() != (ancho, alto):
 
-
-def lanzar_flota():
-    global monedas,jugar, subpantalla
-    try: 
-        import Flotaflota
-    except ImportError:
-            avisar("No se encontro Flotaflota.py")
-            return
-    resultado= Flotaflota.ejecutar_flota()
-    subpantalla= "minijuegos"
-    surf = pygame.display.get_surface()
-    if surf is None or surf.get_size() != (ancho, alto):
-                crear_ventana()           # por si el minijuego cambió la ventana
-    if isinstance(resultado, int) and resultado > 0:
-                monedas += resultado
-                jugar = min(100, jugar + 20)
-                progreso_mision("minijuegos")
-                stats["minijuegos"] += 1
-                ganar_xp(5 + resultado // 2)
-                guardar()
-                avisar(f"¡Ganaste {resultado} monedas!")
-                sonar("moneda")
-
-
-def iniciar_minijuego(clave):
-    global minijuego, subpantalla
-    mj = {"tipo": clave, "fin": False, "puntos": 0, "tiempo": 0.0,
-          "recompensa": 0, "nuevo_record": False}
-    if clave == "atrapa":
-        mj.update(duracion=30.0, x=ancho / 2, items=[], spawn=0.5, combo=0)
-    elif clave == "reflejos":
-        mj.update(duracion=20.0, objetivo=None)
-        _nuevo_objetivo(mj)
-    elif clave == "memoria":
-        simbolos = list(range(len(SIMBOLOS))) * 2
-        random.shuffle(simbolos)
-        mj.update(
-            cartas=[{"sim": s, "vista": False, "hecha": False} for s in simbolos],
-            elegidas=[], espera=0.0, intentos=0,
-        )
-    elif clave == "simon":
-        mj.update(seq=[random.randint(0, 3)], fase="mostrar", paso=0,
-                  reloj=0.8, brillo=-1, entrada=0)
-    minijuego = mj
-    subpantalla = "minijuego"
+        def iniciar_minijuego(clave):
+            global minijuego, subpantalla
+            mj = {"tipo": clave, "fin": False, "puntos": 0, "tiempo": 0.0,
+                "recompensa": 0, "nuevo_record": False}
+            if clave == "atrapa":
+                mj.update(duracion=30.0, x=ancho / 2, items=[], spawn=0.5, combo=0)
+            elif clave == "reflejos":
+                mj.update(duracion=20.0, objetivo=None)
+                _nuevo_objetivo(mj)
+            elif clave == "memoria":
+                simbolos = list(range(len(SIMBOLOS))) * 2
+                random.shuffle(simbolos)
+                mj.update(
+                    cartas=[{"sim": s, "vista": False, "hecha": False} for s in simbolos],
+                    elegidas=[], espera=0.0, intentos=0,
+                )
+            elif clave == "simon":
+                mj.update(seq=[random.randint(0, 3)], fase="mostrar", paso=0,
+                        reloj=0.8, brillo=-1, entrada=0)
+            minijuego = mj
+            subpantalla = "minijuego"
 
 
 def terminar_minijuego(mj):
