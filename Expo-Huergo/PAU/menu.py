@@ -130,15 +130,22 @@ boton_volver_ins = Boton((300, 540, 200, 42), "Volver")
 cruz = pygame.Rect(740, 10, 40, 40)
 
 SECCIONES = [
-    ("Objetivo", "Cuida a Pau: que ninguna barra llegue a cero. Si se desmaya, "
-                 "puedes revivirla con monedas. El progreso se guarda solo."),
+    ("Objetivo", "Cuida a Pau: que ninguna barra llegue a cero. Si su vida (el "
+                 "corazón de arriba) baja del 50 %, empieza a tirarse pedos. "
+                 "El progreso se guarda solo."),
     ("Cómo moverte", "Usa las flechas del juego, o las teclas ← → / A D, para "
                      "cambiar de cuarto. ESC cierra ventanas y abre la pausa."),
-    ("Baño", "Arrastra jabón, ducha y toalla sobre Pau para dejarla limpia."),
+    ("Baño", "Arrastra jabón, ducha y toalla sobre Pau para dejarla limpia. "
+             "En el inodoro puede hacer pis o caca. Si la barra INODORO llega "
+             "a cero, se hace encima: toca la caca para limpiarla."),
     ("Cocina", "Dale de comer. Algunas comidas dan efectos extra: el helado "
-               "divierte, la sopa da sueño y las comidas pesadas ensucian."),
-    ("Habitación", "La almohada la hace dormir (no puedes salir del cuarto). "
+               "divierte, la sopa da sueño y las comidas pesadas ensucian. "
+               "Todo lo que come le da ganas de ir al baño."),
+    ("Habitación", "Toca el velador: se apagan las luces y Pau se acuesta a "
+                   "dormir. Se despierta solo al descansar, o tócalo otra vez. "
                    "En el armario eliges su ropa."),
+    ("Tienda especial", "Vende la Poción matadora. Nadie sabe qué pasa si se "
+                        "la das a Pau... (Borrar progreso lo arregla todo)."),
     ("Sala de estar", "Minijuegos, tienda de comida y ropa, misiones diarias, "
                       "logros y la RULETA: un giro gratis cada día."),
     ("Minijuegos", "Atrapa comida (¡combos y comida dorada!), Memoria, Reflejos "
@@ -418,7 +425,7 @@ while ejecutando:
                     ir_a("menu")
 
             elif pantalla_actual == "juego":
-                if cruz.collidepoint(evento.pos):
+                if cruz.collidepoint(evento.pos) and not principal.en_furia():
                     entrar_pausa()
                 else:
                     principal.manejar_click(evento.pos)
@@ -450,10 +457,15 @@ while ejecutando:
 
     elif pantalla_actual == "juego":
         principal.principal()
-        resaltar = cruz.collidepoint(pos)
-        color = (200, 0, 0) if resaltar else (0, 0, 0)
-        pygame.draw.line(ventana, color, (740, 10), (770, 40), 5)
-        pygame.draw.line(ventana, color, (770, 10), (740, 40), 5)
+        if not principal.en_furia():
+            resaltar = cruz.collidepoint(pos)
+            color = (200, 0, 0) if resaltar else (0, 0, 0)
+            pygame.draw.line(ventana, color, (740, 10), (770, 40), 5)
+            pygame.draw.line(ventana, color, (770, 10), (740, 40), 5)
+
+    # Si Pau tomó la poción matadora, TODO queda rojo y con sangre.
+    if not principal.en_furia():
+        principal.efecto_sangre(ventana)
 
     actualizar_fade(dt)
     if fade > 0:
