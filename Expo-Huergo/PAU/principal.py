@@ -1616,7 +1616,7 @@ def lanzar_flappy():
         avisar("No se encontró Flappy_Pau.py")
         return
 
-    resultado = Flappy_Pau.ejecutando
+    resultado = jugar
 
     subpantalla = "minijuegos"
 
@@ -1926,7 +1926,7 @@ def click_minijuego(pos):
         return
     if mj["fin"]:
         if boton_reintentar.collidepoint(pos):
-            iniciar_minijuego(mj["tipo"])
+            terminar_minijuego(mj["tipo"])
         return
 
     if mj["tipo"] == "atrapa":

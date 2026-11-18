@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import sys
 
 def encontrar_archivo(nombre):
     carpeta_raiz = os.path.dirname(__file__)
@@ -464,3 +465,4 @@ while jugando:
     pygame.display.update()
 
 pygame.quit()
+sys.exit()
