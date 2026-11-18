@@ -430,7 +430,7 @@ while ejecutando:
               and pantalla_actual == "juego"):
             principal.manejar_soltar()
 
-    # --- Dibujo -------------------------------------------------------------
+   
     actualizar_burbujas(dt, tiempo)
 
     if pantalla_actual == "menu":

@@ -20,9 +20,6 @@ def ejecutar_flappy():
 
     reloj = pygame.time.Clock()
 
-    # =========================================================
-    # RUTAS DE LAS IMÁGENES
-    # =========================================================
 
     carpeta = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,13 +42,11 @@ def ejecutar_flappy():
     fondo = pygame.image.load(ruta_fondo).convert()
     pau = pygame.image.load(ruta_pau).convert_alpha()
 
-    # Fondo ocupando toda la pantalla
     fondo = pygame.transform.scale(
         fondo,
         (ANCHO, ALTO)
     )
 
-    # Pau
     pau = pygame.transform.scale(
         pau,
         (100, 100)

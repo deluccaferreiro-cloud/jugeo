@@ -30,20 +30,17 @@ def crear_ventana():
 
 crear_ventana()
 
-# Cada cuántos ms baja 1 punto cada barra (antes 1000). Más alto = más lento.
+
 TIEMPO_DISMINUCION = 4500
-# Pantallas en las que las barras NO bajan (todos los minijuegos, actuales y futuros).
-# Para un minijuego nuevo basta usar alguna de estas subpantallas o añadir su nombre aquí.
 SUBPANTALLAS_PAUSA = {"minijuegos", "minijuego"}
 DURACION_NOCHE = 3000
 
-# --- Ausencia / guardado -----------------------------------------------------
-OFFLINE_SEGUNDOS_POR_PUNTO = 120    # 1 punto cada 120 s de ausencia
-OFFLINE_MAX_PERDIDA = 60            # como máximo se pierden 60 puntos
-NECESIDAD_MINIMA_OFFLINE = 10       # ausente, ninguna barra baja de 10
-INTERVALO_AUTOGUARDADO = 10000      # ms
-BONUS_DIARIO = 20                   # monedas por entrar un día nuevo
-DURACION_AVISO = 1800               # ms que se ve cada aviso
+OFFLINE_SEGUNDOS_POR_PUNTO = 120    
+OFFLINE_MAX_PERDIDA = 60            
+NECESIDAD_MINIMA_OFFLINE = 10       
+INTERVALO_AUTOGUARDADO = 10000      
+BONUS_DIARIO = 20                   
+DURACION_AVISO = 1800               
 
 CARPETAS = [
     "", "FONDOS", "objetos", "personajes", "imagenes", "sonidos",
@@ -99,7 +96,7 @@ def _ajustar(img, maximo):
         return pygame.transform.scale(img, tam)
 
 
-# --- Sonidos (opcionales: si no existe el archivo, simplemente no suena) ----
+
 config = {"sonido": True}
 SONIDOS_ARCHIVOS = {
     "comer": "comer.wav", "moneda": "moneda.wav", "click": "click.wav",
@@ -129,7 +126,6 @@ def alternar_sonido():
 
 ARCHIVO_GUARDADO = os.path.join(ruta_actual, "guardado.json")
 
-# (nombre, archivo, precio, cuánto sube COMER)
 COMIDAS = [
     ("Manzana", "manzana.png", 3, 10),
     ("Pizza", "pizza.png", 6, 20),
@@ -145,7 +141,6 @@ COMIDAS = [
     ("Pollo", "pollo.png", 11, 32),
 ]
 
-# Efectos extra al comer (además de subir COMER). Negativo = ensucia.
 EFECTOS = {
     "Helado": {"jugar": 12},
     "Dona": {"jugar": 8},
@@ -157,14 +152,12 @@ EFECTOS = {
     "Hamburguesa": {"baño": -5},
 }
 
-# Jardín: segundos de crecimiento, cuánto se cosecha y precio de la semilla.
 CULTIVOS = {
     "Manzana": {"tiempo": 40, "cosecha": 2, "semilla": 1},
     "Zanahoria": {"tiempo": 60, "cosecha": 3, "semilla": 1},
     "Sandía": {"tiempo": 120, "cosecha": 2, "semilla": 3},
 }
 
-# Misiones diarias (se reinician cada día).
 MISIONES = [
     {"id": "comer", "texto": "Dale de comer a Pau 3 veces", "meta": 3, "premio": 15},
     {"id": "banar", "texto": "Báñala una vez", "meta": 1, "premio": 15},
@@ -175,7 +168,6 @@ MISIONES = [
 ]
 MISIONES_POR_ID = {m["id"]: m for m in MISIONES}
 
-# Logros permanentes: se cobran solos al cumplirse.
 LOGROS = [
     {"id": "bocado", "nombre": "Primer bocado", "desc": "Dale de comer 1 vez", "stat": "comidas", "meta": 1, "premio": 10},
     {"id": "glotona", "nombre": "Glotona", "desc": "Dale de comer 30 veces", "stat": "comidas", "meta": 30, "premio": 40},
@@ -189,31 +181,8 @@ LOGROS = [
     {"id": "racha3", "nombre": "Constante", "desc": "Racha de 3 días", "stat": "racha", "meta": 3, "premio": 50},
 ]
 
-# ---------------------------------------------------------------------------
-# ROPA Y ACCESORIOS
-# Para agregar una prenda nueva: añade una línea a PRENDAS y copia su PNG
-# (fondo transparente) a la carpeta "personajes". Si el PNG todavía no existe,
-# el juego funciona igual: la tarjeta se ve con un "?" y la prenda no se dibuja.
-#   nombre : nombre que se muestra (debe ser único)
-#   archivo: imagen PNG
-#   slot   : una prenda por slot; prendas de slots distintos se combinan
-#   precio : monedas (0 = ya viene en el armario)
-# Opcionales:
-#   offset : (dx, dy) respecto del centro de Pau (y negativo = más arriba)
-#   tam    : tamaño máximo en px (se mantiene la proporción, sin deformar).
-#            Sin "tam", la imagen es una capa del tamaño de Pau (como las
-#            prendas originales).
-#   escala : multiplica el tamaño final (1.0 = tal cual)
-#   archivo_dormido: imagen alternativa para cuando Pau duerme
-#
-# SLOTS (de abajo hacia arriba, ver ORDEN_CAPAS):
-#   cuerpo, cuello, mano, cara, vello (bigote/barba), boca, pelo,
-#   cabeza (gorros), adorno (moños, cuernos, antenas), extra, efecto
-# Los accesorios nuevos usan "tam" y "offset": se ven bien con PNG recortados
-# al objeto; si alguno queda corrido, ajusta solo su offset o su tam.
-# ---------------------------------------------------------------------------
 PRENDAS = [
-    # --- Prendas originales ---
+  
     
     {"nombre": "Pelo Rojo", "archivo": "gorra.png", "slot": "pelo", "precio": 0,
     "offset": (0, -30), "tam": 260},
@@ -221,13 +190,15 @@ PRENDAS = [
     "offset": (0, 9), "tam": 26},
     {"nombre": "tridente de diablo", "archivo": "camiseta.png", "slot": "cuerpo", "precio": 0,
     "offset": (0, 50), "tam": 150},
-    {"nombre": "Paleta de pintor", "archivo": "sombrero.png", "slot": "mano", "precio": 0},
+    {"nombre": "Paleta de pintor", "archivo": "sombrero.png", "slot": "mano", "precio": 0,
+        "offset": (-90, 20), "tam": 100},
+    
     {"nombre": "Uniceja", "archivo": "bufanda.png", "slot": "cara", "precio": 0,
     "offset": (0, -30), "tam": 120},
     {"nombre": "Antorcha", "archivo": "vestido.png", "slot": "mano", "precio": 0,
     "offset": (70, 0), "tam": 100},
     {"nombre": "Lentes swifties", "archivo": "corona.png", "slot": "cara", "precio": 0},
-    # --- Accesorios y disfraces ---
+   
     {"nombre": "Orejas de gato", "archivo": "tutu.png", "slot": "cuerpo", "precio": 0,
      "offset": (0, -70), "tam": 110},
     {"nombre": "Moño rosa", "archivo": "mono_rosa.png", "slot": "adorno", "precio": 0,
@@ -284,7 +255,7 @@ PRENDAS = [
      "offset": (0, -25), "tam": 130},
 ]
 PRENDAS_POR_NOMBRE = {p["nombre"]: p for p in PRENDAS}
-# De abajo hacia arriba. Una prenda por slot; slots distintos se combinan.
+
 ORDEN_CAPAS = ["cuerpo", "cuello", "mano", "cara", "vello", "boca",
                "pelo", "cabeza", "adorno", "extra", "efecto"]
 PRENDAS_POR_PAGINA = 8
@@ -292,7 +263,6 @@ Y_ARMARIO = 150
 Y_TIENDA = 200
 
 
-# --- Estado persistente ------------------------------------------------------
 def hoy():
     return time.strftime("%Y-%m-%d")
 
@@ -313,7 +283,7 @@ nivel = 1
 huerta = [None, None, None]
 cultivo_elegido = "Manzana"
 misiones_dia = {"dia": hoy(), "progreso": {}, "reclamadas": []}
-ruleta_dia = ""         # día en que se usó el giro gratis
+ruleta_dia = ""         
 
 baño = 100
 comer = 100
@@ -424,7 +394,7 @@ def cargar_datos():
             ultimo_dia = hoy()
             return
         except (OSError, ValueError, TypeError, AttributeError):
-            # Archivo corrupto: se guarda una copia antes de empezar de cero.
+           
             try:
                 os.replace(ARCHIVO_GUARDADO, ARCHIVO_GUARDADO + ".bak")
             except OSError:
@@ -463,14 +433,14 @@ def guardar():
                 },
                 f,
             )
-        os.replace(tmp, ARCHIVO_GUARDADO)     # escritura atómica
+        os.replace(tmp, ARCHIVO_GUARDADO)    
     except OSError as e:
         print(f"[AVISO] No se pudo guardar: {e}")
 
 
 cargar_datos()
 
-acum_descenso = 0.0       # ms acumulados hacia el próximo descenso de barras
+acum_descenso = 0.0      
 ultimo_incremento_dormir = pygame.time.get_ticks()
 ultimo_guardado = pygame.time.get_ticks()
 ultimo_chequeo_dia = pygame.time.get_ticks()
@@ -483,7 +453,7 @@ muerta = False
 mensaje_temporal = ""
 tiempo_mensaje = 0
 cola_avisos = []
-habla = ("", 0)                 # (texto, ms hasta cuando se muestra)
+habla = ("", 0)                
 habitacion_actual = 1
 nombres_habitaciones = ["BAÑO", "SALA DE ESTAR", "HABITACIÓN", "COCINA", "JARDÍN"]
 subpantalla = "normal"
@@ -557,14 +527,10 @@ imagenes_comidas = {c[0]: cargar_imagen(c[1], maximo=90) for c in COMIDAS}
 imgs_caida = {n: _ajustar(i, 48) for n, i in imagenes_comidas.items() if i is not None}
 img_cesta = _ajustar(pou_feliz, 90)
 
-# --- Decoración de la mesa de luz -------------------------------------------
-# La almohada (almohada.png) ocupa el lugar donde estaba la lámpara.
-# AJUSTAR posición y tamaño según el fondo "habitacion.png".
-ALMOHADA_MESITA_BASE = (650, 400)   # punto donde se apoya (centro inferior)
-TAMAÑO_ALMOHADA_MESITA = 80         # tamaño máximo en px (mantiene proporción)
+ALMOHADA_MESITA_BASE = (650, 400)   
+TAMAÑO_ALMOHADA_MESITA = 80       
 img_almohada_mesita = cargar_imagen("almohada.png", maximo=TAMAÑO_ALMOHADA_MESITA)
 
-# --- Velos reutilizables (se crean UNA vez, no en cada frame) ---------------
 VELO_NOCHE = pygame.Surface((ancho, alto))
 VELO_NOCHE.set_alpha(180)
 VELO_NOCHE.fill((0, 0, 50))
@@ -573,7 +539,6 @@ VELO_MUERTE.set_alpha(150)
 VELO_MUERTE.fill((20, 0, 0))
 
 
-# --- Ropa: imágenes ----------------------------------------------------------
 def cargar_prenda(archivo, escala=1.0, tam=None):
     img = cargar_imagen(archivo, maximo=tam or TAMAÑO_POU)
     if img is not None and escala != 1.0:
@@ -684,9 +649,6 @@ barra_dormir = pygame.Rect(410, pos_y_barras, 170, 20)
 barra_jugar = pygame.Rect(600, pos_y_barras, 170, 20)
 
 
-# ---------------------------------------------------------------------------
-# FORMAS Y PARTÍCULAS
-# ---------------------------------------------------------------------------
 def dibujar_corazon(sup, centro, r, color):
     cx, cy = centro
     pygame.draw.circle(sup, color, (cx - r // 2, cy - r // 4), r // 2 + 1)
@@ -757,9 +719,6 @@ def dibujar_particulas(ventana):
         ventana.blit(s, s.get_rect(center=(int(p["x"]), int(p["y"]))))
 
 
-# ---------------------------------------------------------------------------
-# DIBUJO BÁSICO
-# ---------------------------------------------------------------------------
 def color_barra(valor):
     if valor > 60:
         return (100, 200, 100)
@@ -915,7 +874,6 @@ def dibujar_catalogo(ventana, titulo, modo):
     dibujar_paginacion(ventana, len(COMIDAS))
 
 
-# --- Armario / tienda de ropa -----------------------------------------------
 def total_paginas(cantidad):
     return max(1, math.ceil(cantidad / PRENDAS_POR_PAGINA))
 
@@ -963,7 +921,7 @@ def dibujar_tarjeta_prenda(ventana, rect, prenda, borde_verde, subtitulo):
     mini = miniaturas_ropa.get(nombre)
     if mini is not None:
         ventana.blit(mini, mini.get_rect(center=(rect.centerx, rect.y + 55)))
-    else:                       # todavía no hay imagen para esta prenda
+    else:                       
         q = fuente_grande.render("?", True, (170, 170, 170))
         ventana.blit(q, q.get_rect(center=(rect.centerx, rect.y + 55)))
 
@@ -1066,7 +1024,6 @@ def dibujar_ropa(ventana, centro):
         ventana.blit(img, img.get_rect(center=(centro[0] + dx, centro[1] + dy)))
 
 
-# --- Suciedad ---------------------------------------------------------------
 def dibujar_suciedad(ventana, centro):
     """Mantiene visible la suciedad de Pau mientras duerme."""
     if baño >= UMBRAL_SUCIO:
@@ -1098,9 +1055,6 @@ def obtener_personaje():
     return pou_feliz
 
 
-# ---------------------------------------------------------------------------
-# NIVELES, LOGROS, MISIONES, JARDÍN Y REGALOS
-# ---------------------------------------------------------------------------
 def xp_para_siguiente(n):
     return 40 + 20 * n
 
@@ -1288,7 +1242,6 @@ def click_misiones(posicion):
             crear_particulas("moneda", rect_boton_mision(i).center, 8)
 
 
-# --- Ruleta de la suerte ---
 RULETA_PREMIOS = [
     ("+5", "monedas", 5), ("+10", "monedas", 10), ("Comida", "comida", 1),
     ("+20", "monedas", 20), ("+10 XP", "xp", 10), ("+50", "monedas", 50),
@@ -1407,7 +1360,6 @@ def click_ruleta(posicion):
         girar_ruleta()
 
 
-# --- Jardín ---
 def _progreso_parcela(parcela):
     tiempo = CULTIVOS[parcela["cultivo"]]["tiempo"]
     return max(0.0, min(1.0, (time.time() - parcela["inicio"]) / tiempo))
@@ -1502,7 +1454,6 @@ def dibujar_jardin(ventana, ahora):
     ventana.blit(ayuda, ayuda.get_rect(center=(520, 145)))
 
 
-# --- Regalos sorpresa ---
 DURACION_REGALO = 8000
 regalo = None
 proximo_regalo = pygame.time.get_ticks() + random.randint(45000, 90000)
@@ -1558,9 +1509,6 @@ def dibujar_regalo(ventana, ahora):
     pygame.draw.rect(ventana, (0, 0, 0), r, 2, border_radius=6)
 
 
-# ---------------------------------------------------------------------------
-# DESMAYO / REVIVIR
-# ---------------------------------------------------------------------------
 def _desmayar():
     global muerta, subpantalla, modo_noche, minijuego, arrastrando
     muerta = True
@@ -1629,9 +1577,6 @@ def reiniciar_progreso():
     guardar()
 
 
-# ---------------------------------------------------------------------------
-# MINIJUEGOS (integrados, sin bloquear el bucle principal)
-# ---------------------------------------------------------------------------
 MINIJUEGOS = [
     ("Flappy Pau", "flappy"),
     ("Atrapa comida", "atrapa"),
@@ -1672,7 +1617,7 @@ def lanzar_flappy():
     subpantalla = "minijuegos"
     surf = pygame.display.get_surface()
     if surf is None or surf.get_size() != (ancho, alto):
-        crear_ventana()           # por si el minijuego cambió la ventana
+        crear_ventana()          
     if isinstance(resultado, int) and resultado > 0:
         monedas += resultado
         jugar = min(100, jugar + 20)
@@ -1724,7 +1669,6 @@ def terminar_minijuego(mj):
     crear_particulas("moneda", (400, 300), 10)
 
 
-# --- Atrapa comida (con combos y comida dorada) ---
 def _multiplicador(mj):
     return min(3, 1 + mj["combo"] // 5)
 
@@ -1774,7 +1718,7 @@ def _actualizar_atrapa(mj, dt):
         elif it["y"] < alto + 30:
             restantes.append(it)
         elif it["tipo"] not in ("basura",):
-            mj["combo"] = 0          # se te cayó comida: se rompe el combo
+            mj["combo"] = 0          
     mj["items"] = restantes
 
 
@@ -1838,7 +1782,6 @@ def _dibujar_reflejos(ventana, mj):
     pygame.draw.circle(ventana, (0, 0, 0), centro, r, 2)
 
 
-# --- Memoria ---
 def rect_carta(i):
     return pygame.Rect(150 + (i % 4) * 130, 130 + (i // 4) * 135, 110, 120)
 
@@ -1891,7 +1834,6 @@ def _click_memoria(mj, pos):
             return
 
 
-# --- Simón dice ---
 def rect_pad(i):
     return pygame.Rect(250 + (i % 2) * 150, 150 + (i // 2) * 150, 140, 140)
 
@@ -1951,7 +1893,6 @@ def _dibujar_simon(ventana, mj):
         pygame.draw.rect(ventana, (0, 0, 0), r, 3, border_radius=18)
 
 
-# --- Control general de minijuegos ---
 def actualizar_minijuego(dt):
     mj = minijuego
     if mj is None or mj["fin"]:
@@ -2081,11 +2022,8 @@ def dibujar_minijuego(ventana):
     dibujar_monedas(ventana)
 
 
-# ---------------------------------------------------------------------------
-# INTERACCIÓN
-# ---------------------------------------------------------------------------
 FRASES_CARICIA = ["¡Me encanta!", "¡Qué rico!", "¡Más, más!", "¡Te quiero!",
-                  "Jijiji...", "¡Eres la mejor!", "¡Qué cosquillas!"]
+                  "Jijiji", "¡Sos la mejor!", "Awwww"]
 
 
 def acariciar(posicion):
@@ -2241,12 +2179,10 @@ def manejar_click(posicion):
         click_ruleta(posicion)
         return
 
-    # Regalo sorpresa
     if regalo is not None and rect_regalo().collidepoint(posicion):
         abrir_regalo()
         return
 
-    # Mientras Pau duerme no se puede cambiar de habitación
     if not modo_noche:
         if flecha_izquierda.collidepoint(posicion):
             cambiar_habitacion(-1)
@@ -2299,7 +2235,6 @@ def manejar_click(posicion):
                 if rect.collidepoint(posicion):
                     usar_parcela(i, posicion)
 
-    # Caricias: click sobre Pau (fuera del baño y sin que duerma)
     if (subpantalla == "normal" and habitacion_actual != 0 and not modo_noche
             and zona_pou.collidepoint(posicion)):
         acariciar(posicion)
@@ -2340,7 +2275,6 @@ def manejar_movimiento(pos):
             return
 
     pos_arrastre = pos
-
 
 def manejar_soltar():
     global arrastrando
@@ -2387,8 +2321,6 @@ def actualizar_necesidades(dt):
     tiempo_actual = pygame.time.get_ticks()
     pausadas = necesidades_pausadas()
 
-    # El descenso usa un acumulador (no marcas de tiempo): al pausar solo se
-    # deja de sumar, así al volver no hay saltos ni bajadas de golpe.
     if not pausadas:
         acum_descenso += dt * 1000
         if acum_descenso >= TIEMPO_DISMINUCION:
@@ -2411,7 +2343,6 @@ def actualizar_necesidades(dt):
     if not pausadas and not muerta and min(baño, comer, dormir, jugar) <= 0:
         _desmayar()
 
-    # ¿Cambió el día mientras jugabas? (pasada la medianoche)
     if tiempo_actual - ultimo_chequeo_dia >= 5000:
         ultimo_chequeo_dia = tiempo_actual
         if hoy() != ultimo_dia:
@@ -2498,7 +2429,6 @@ def principal():
         fondos = [fondo_bano, fondo_sala, fondo_habitacion, fondo_cocina, fondo_jardin]
         ventana.blit(fondos[habitacion_actual], (0, 0))
 
-        # Almohada sobre la mesa de luz (antes de la capa nocturna)
         if habitacion_actual == 2:
             dibujar_almohada_mesita(ventana)
 
@@ -2548,7 +2478,6 @@ def principal():
         elif habitacion_actual == 4:
             dibujar_jardin(ventana, ahora)
 
-        # Pau habla (reacciones) o avisa cuando necesita algo
         if habitacion_actual != 0 and not modo_noche and not muerta:
             if habla[0] and ahora < habla[1]:
                 dibujar_burbuja_habla(ventana, habla[0], 400, 180)
