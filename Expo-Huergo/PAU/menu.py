@@ -463,7 +463,6 @@ while ejecutando:
             pygame.draw.line(ventana, color, (740, 10), (770, 40), 5)
             pygame.draw.line(ventana, color, (770, 10), (740, 40), 5)
 
-    # Si Pau tomó la poción matadora, TODO queda rojo y con sangre.
     if not principal.en_furia():
         principal.efecto_sangre(ventana)
 

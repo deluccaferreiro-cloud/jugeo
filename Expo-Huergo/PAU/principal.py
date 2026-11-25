@@ -44,30 +44,30 @@ ANGULO_ACOSTADO = -65               # grados (negativo = horario, cabeza a la al
 # Inodoro
 SUBE_PIS = 40
 SUBE_CACA = 100
-DURACION_INODORO = 2600             # ms sentado en el inodoro
+DURACION_INODORO = 2600             
 
-# Pedos: si la VIDA (promedio de las barras) baja del 50 %
+
 UMBRAL_PEDOS = 50
-PEDO_CADA_MS = (7000, 16000)        # intervalo aleatorio entre pedos
+PEDO_CADA_MS = (7000, 16000)        
 
-# Pociones
-PRECIO_POCION = 66                  # matadora
-PRECIO_POCION_VIDA = 100            # Pau vuelve a ser bueno y pide perdón (una sola vez)
-PRECIO_POCION_67 = 67               # Pau hace el 67
+
+PRECIO_POCION = 66                 
+PRECIO_POCION_VIDA = 100            
+PRECIO_POCION_67 = 67              
 DURACION_67 = 4200
 
-# Modo diablo
-PROB_SUSTO = 1 / 1000               # chance de jumpscare por segundo
+
+PROB_SUSTO = 1 / 1000               
 DURACION_SUSTO = 1300
 
-# Enojo: si llega a 100, Pau se va volando (se lo llama con el celular)
+
 ENOJO_REVOLEO = 12
 ENOJO_REVOLEO_DIABLO = 20
 ENOJO_CARICIA_DIABLO = 4
-ENOJO_BAJA_CADA_MS = 2500           # baja 1 punto cada tanto
+ENOJO_BAJA_CADA_MS = 2500         
 
-# Pau Jr
-JR_VISITA_CADA = (20000, 50000)     # cada cuánto aparece (ms)
+
+JR_VISITA_CADA = (20000, 50000)    
 TAMAÑO_JR = 80
 
 OFFLINE_SEGUNDOS_POR_PUNTO = 120    
@@ -328,16 +328,16 @@ baño = 100
 comer = 100
 dormir = 100
 jugar = 100
-inodoro = 100           # 100 = sin ganas; en 0 Pau se hace encima
-caca_en_piso = False    # Pau se hizo encima y hay que limpiar
-pociones = 0            # pociones matadoras compradas
+inodoro = 100          
+caca_en_piso = False    
+pociones = 0           
 pociones_vida = 0
 pociones_67 = 0
-maldito = False         # "modo diablo": Pau tomó la poción y el juego queda ensangrentado
-perdonado = False       # ya usaste la poción de vida una vez
-sin_perdon = False      # le volviste a dar la matadora después del perdón: nunca más
-enojo = 0               # 0-100; en 100 Pau se va volando
-pau_ausente = False     # Pau se fue (llamalo con el celular)
+maldito = False         
+perdonado = False       
+sin_perdon = False     
+enojo = 0               
+pau_ausente = False    
 
 
 def vida():
@@ -524,30 +524,30 @@ ultimo_chequeo_dia = pygame.time.get_ticks()
 ultimo_frame = pygame.time.get_ticks()
 ultimo_zzz = 0
 ultima_caricia = 0
-modo_noche = False              # luces apagadas y Pau durmiendo
-lleno_desde = 0                 # ms en que DORMIR llegó a 100 durmiendo
-en_inodoro = None               # {"tipo": "pis"/"caca", "fin": ms} mientras está sentado
+modo_noche = False             
+lleno_desde = 0                
+en_inodoro = None               
 proximo_pedo = 0
-furia = None                    # {"t0": ms} durante la escena de la poción
+furia = None                    
 ultima_gota = 0
-susto = None                    # {"t0": ms} durante un jumpscare
+susto = None                    
 ultimo_chequeo_susto = 0
-escena_perdon = None            # {"t0": ms, "dichas": n} poción de vida
-haciendo_67 = None              # {"t0": ms}
-inicio_mirada = 0               # modo diablo: desde cuándo te mira en la oscuridad
+escena_perdon = None        
+haciendo_67 = None            
+inicio_mirada = 0           
 ultimo_baja_enojo = 0
-# Posición y física de Pau (agarrarlo y revolearlo)
+
 CASA_POU = (400.0, 320.0)
 pau_pos = list(CASA_POU)
-pau_fis = None                  # {"vx", "vy", "ang", "va"} mientras vuela por el aire
-agarre = None                   # {"ini", "movido", "hist", "dx", "dy"} mientras lo agarrás
-volviendo = None                # {"desde", "t0"} vuelve caminando a su lugar
-yendose = None                  # {"t0"} se enojó mucho y se va volando
-llegando = None                 # {"t0"} vuelve volando después de llamarlo
-# Pau Jr
-jr = None                       # visita en curso
+pau_fis = None                 
+agarre = None                   
+volviendo = None             
+yendose = None               
+llegando = None              
+
+jr = None                    
 proxima_visita_jr = 0
-# Celular
+
 cel = {"estado": "inicio", "t0": 0, "chat": [], "nodo": "", "opciones": [],
        "pendiente": None, "hackeado": False, "intentos_colgar": 0}
 mensaje_temporal = ""
@@ -575,7 +575,6 @@ def _procesar_avisos(ahora):
         tiempo_mensaje = ahora
 
 
-# En modo diablo Pau está molesto: TODO lo que dice cambia.
 DIALOGOS_MOLESTO = {
     "¡Ñam ñam!": "Esto es asqueroso.",
     "¡Qué fresquita!": "No me toques con eso.",
@@ -638,8 +637,6 @@ def _teñir_sucio(img):
 
 pou_dormido_sucio = _teñir_sucio(pou_dormido)
 
-# --- Ojos de Pau (poción matadora / maldición) ------------------------------
-# Posición y tamaño de los ojos en paumaso.png (imagen de 542 x 542 px).
 OJOS_POU = [(215, 209), (326, 207)]
 RADIO_OJO = (27, 12)
 ANCHO_CARA = 542
@@ -663,7 +660,7 @@ def _cara_furia(base):
         pygame.draw.ellipse(img, (5, 0, 0), (ox - rx, oy - ry * 1.3, rx * 2, ry * 2.6))
         pygame.draw.circle(img, (200, 0, 0), (ox, oy), int(8 * k) + 2)
         pygame.draw.circle(img, (255, 70, 50), (ox, oy), int(3 * k) + 1)
-        lado = -1 if i == 0 else 1          # ceja: alta afuera, baja hacia la nariz
+        lado = -1 if i == 0 else 1         
         ext = (ox + lado * rx * 1.2, oy - ry * 3.4)
         inn = (ox - lado * rx * 0.9, oy - ry * 1.6)
         pygame.draw.line(img, (40, 10, 5), ext, inn, max(3, int(9 * k)))
@@ -691,12 +688,10 @@ pou_furia = _cara_furia(pou_maso)
 pou_maldito = _cara_sangre(pou_maso)
 pou_susto = _cara_sangre(cargar_imagen("paumaso.png", maximo=700) or pou_maso)
 
-# --- Pau Jr ------------------------------------------------------------------
 jr_feliz = _ajustar(pou_feliz, TAMAÑO_JR)
 jr_muerto = _ajustar(cargar_pou("paumuerto.png"), TAMAÑO_JR)
 img_chupetin = cargar_imagen("chupetin.png", maximo=78)
 
-# --- Celular -----------------------------------------------------------------
 img_celular = cargar_imagen("celular.png", maximo=78)
 rect_celular = pygame.Rect(10, 500, 62, 88)
 
@@ -709,9 +704,7 @@ imagenes_comidas = {c[0]: cargar_imagen(c[1], maximo=90) for c in COMIDAS}
 imgs_caida = {n: _ajustar(i, 48) for n, i in imagenes_comidas.items() if i is not None}
 img_cesta = _ajustar(pou_feliz, 90)
 
-# --- Habitación: mesita de luz con velador ----------------------------------
-# AJUSTAR posición y tamaño según el fondo "habitacion.png".
-MESITA_BASE = (112, 478)            # centro inferior de la mesita
+MESITA_BASE = (112, 478)            
 img_mesita = cargar_imagen("mesita.png", maximo=125)
 img_velador = cargar_imagen("velador.png", maximo=125)
 _alto_mesita = img_mesita.get_height() if img_mesita else 90
@@ -734,11 +727,9 @@ def _crear_resplandor(radio, color):
 
 RESPLANDOR_VELADOR = _crear_resplandor(150, (255, 225, 140, 150))
 
-# Cama: dónde se acuesta Pau al dormir
 CENTRO_CAMA = (425, 318)
 TAMAÑO_ACOSTADO = 175
 
-# --- Baño: inodoro -----------------------------------------------------------
 INODORO_BASE = (675, 440)
 img_inodoro = cargar_imagen("inodoro.png", maximo=135)
 if img_inodoro is not None:
@@ -748,15 +739,12 @@ else:
     rect_inodoro.midbottom = INODORO_BASE
 boton_pis = pygame.Rect(612, 448, 70, 34)
 boton_caca = pygame.Rect(688, 448, 80, 34)
-# Dónde se sienta Pau (sobre el asiento del inodoro)
 ASIENTO_INODORO = (rect_inodoro.x + rect_inodoro.width * 0.42,
                    rect_inodoro.y + rect_inodoro.height * 0.35)
 img_caca = cargar_imagen("caca.png", maximo=60)
 rect_caca_piso = pygame.Rect(0, 0, 70, 60)
 rect_caca_piso.center = (530, 410)
 
-# --- Poción matadora ---------------------------------------------------------
-# (clave, nombre, archivo, precio)
 POCIONES = [
     ("matadora", "Poción matadora", "pocion_matadora.png", PRECIO_POCION),
     ("vida", "Poción de vida", "pocion_vida.png", PRECIO_POCION_VIDA),
@@ -765,7 +753,6 @@ POCIONES = [
 img_pociones = {c: cargar_imagen(a, maximo=110) for c, _, a, _ in POCIONES}
 img_pociones_chicas = {c: cargar_imagen(a, maximo=62) for c, _, a, _ in POCIONES}
 img_pocion = img_pociones["matadora"]
-# En la cocina: una pocioncita por tipo (solo las que tengas)
 rects_pocion_cocina = {c: pygame.Rect(80 + i * 78, 455, 72, 100)
                        for i, (c, _, _, _) in enumerate(POCIONES)}
 fuente_furia = pygame.font.Font(None, 96)
@@ -922,7 +909,7 @@ particulas = []
 
 def crear_particulas(tipo, pos, n=6):
     """tipo: corazon, estrella, moneda, burbuja, zzz, pedo, sangre (salpicadura) o gota."""
-    # Modo diablo: en los minijuegos todo festejo es una salpicadura de sangre.
+   
     if maldito and subpantalla == "minijuego" and tipo in ("estrella", "moneda",
                                                           "burbuja", "corazon"):
         tipo, n = "sangre", n + 3
@@ -1513,7 +1500,7 @@ def dibujar_nivel(ventana):
 
 def aplicar_efectos(nombre):
     global baño, dormir, jugar, inodoro
-    # Lo que entra, sale: comer da ganas de ir al baño.
+    
     valor = next((c[3] for c in COMIDAS if c[0] == nombre), 0)
     inodoro = max(1, inodoro - valor // 3)
     for k, v in EFECTOS.get(nombre, {}).items():
@@ -1525,7 +1512,6 @@ def aplicar_efectos(nombre):
             jugar = _limitar(jugar + v)
 
 
-# --- Logros ---
 def valor_logro(l):
     if l["stat"] == "nivel":
         return nivel
@@ -1587,7 +1573,6 @@ def dibujar_logros(ventana):
     dibujar_boton(ventana, boton_volver, "Volver")
 
 
-# --- Misiones diarias ---
 def _revisar_dia_misiones():
     global misiones_dia
     if misiones_dia.get("dia") != hoy():
@@ -1941,9 +1926,6 @@ def dibujar_regalo(ventana, ahora):
     pygame.draw.rect(ventana, (0, 0, 0), r, 2, border_radius=6)
 
 
-# ---------------------------------------------------------------------------
-# SUEÑO (velador)
-# ---------------------------------------------------------------------------
 def apagar_luz():
     global modo_noche, lleno_desde, inicio_mirada
     if pau_ausente:
@@ -1953,7 +1935,6 @@ def apagar_luz():
     lleno_desde = 0
     reiniciar_posicion_pau()
     if maldito:
-        # En modo diablo no quiere dormir: se queda parado mirándote en la oscuridad.
         inicio_mirada = pygame.time.get_ticks()
         pau_dice("No voy a dormir.", 2500, crudo=True)
         return
@@ -1974,9 +1955,6 @@ def mirando_en_oscuridad():
     return modo_noche and maldito
 
 
-# ---------------------------------------------------------------------------
-# INODORO Y PEDOS
-# ---------------------------------------------------------------------------
 def usar_inodoro(tipo):
     global en_inodoro
     if en_inodoro is not None:
@@ -2055,14 +2033,10 @@ def dibujar_vida(ventana):
     ventana.blit(t, (240, 11))
 
 
-# ---------------------------------------------------------------------------
-# POCIÓN MATADORA
-# ---------------------------------------------------------------------------
-# Tiempos de la escena (ms desde que Pau la toma)
-FURIA_APAGON = 2800         # se apagan las luces (con parpadeo)
-FURIA_OSCURO = 3600         # todo negro, solo quedan los ojos
-FURIA_TEXTO = 4000          # aparece "Los voy a matar"
-FURIA_CIERRE = 8500         # se cierra el juego
+FURIA_APAGON = 2800         
+FURIA_OSCURO = 3600        
+FURIA_TEXTO = 4000         
+FURIA_CIERRE = 8500        
 TEXTO_FURIA = "Los voy a matar"
 
 
@@ -2071,9 +2045,9 @@ def dar_pocion():
     global pociones, maldito, furia, modo_noche, arrastrando, en_inodoro, sin_perdon
     global haciendo_67, escena_perdon, jr
     pociones -= 1
-    maldito = True              # se guarda YA, por si cierran la ventana a mitad
+    maldito = True             
     if perdonado:
-        sin_perdon = True       # ya lo perdonaste una vez: esta vez no hay vuelta atrás
+        sin_perdon = True      
     guardar()
     furia = {"t0": pygame.time.get_ticks()}
     modo_noche = False
@@ -2100,13 +2074,13 @@ def dibujar_ojos_brillantes(ventana, centro, img, brillo=1.0):
 
 def dibujar_furia(ventana, centro_pou, ahora):
     t = ahora - furia["t0"]
-    # 1) Pau se enoja: pantalla cada vez más roja
+    
     if t < FURIA_OSCURO:
         VELO_ROJO.set_alpha(min(110, t * 110 // FURIA_APAGON))
         ventana.blit(VELO_ROJO, (0, 0))
     if t < FURIA_APAGON:
         dibujar_burbuja_habla(ventana, "Grrrrrr...", centro_pou[0], 180)
-    # 2) Las luces parpadean y se apagan
+    
     if t >= FURIA_APAGON:
         parpadeo = t < FURIA_OSCURO and (t // 120) % 3 == 1
         if not parpadeo:
@@ -2114,7 +2088,7 @@ def dibujar_furia(ventana, centro_pou, ahora):
             ventana.blit(VELO_NEGRO, (0, 0))
         dibujar_ojos_brillantes(ventana, centro_pou, pou_furia,
                                 0.7 + 0.3 * math.sin(ahora / 90))
-    # 3) "Los voy a matar"
+    
     if t >= FURIA_TEXTO:
         letras = min(len(TEXTO_FURIA), (t - FURIA_TEXTO) // 90 + 1)
         texto = TEXTO_FURIA[:letras]
@@ -2127,16 +2101,12 @@ def dibujar_furia(ventana, centro_pou, ahora):
     if sin_perdon and t >= FURIA_TEXTO + 1800:
         s = fuente_grande.render("Y esta vez no te perdono.", True, (170, 0, 0))
         ventana.blit(s, s.get_rect(center=(ancho // 2, 545)))
-    # 4) Se cierra el juego
+    
     if t >= FURIA_CIERRE:
         guardar()
         pygame.quit()
         sys.exit(0)
 
-
-# ---------------------------------------------------------------------------
-# POCIÓN DE VIDA (perdón) Y POCIÓN 67
-# ---------------------------------------------------------------------------
 GUION_PERDON = [(1400, "Perdón... no sé qué me pasó."),
                 (4200, "Me porté re mal. ¿Me perdonás?"),
                 (7000, "¡Te quiero mucho! Nunca más.")]
@@ -2169,7 +2139,7 @@ def actualizar_perdon(ahora):
     if escena_perdon is None:
         return
     t = ahora - escena_perdon["t0"]
-    if maldito and t >= 1000:           # en el destello blanco vuelve a ser bueno
+    if maldito and t >= 1000:          
         maldito = False
         perdonado = True
         enojo = 0
@@ -2189,7 +2159,7 @@ def actualizar_perdon(ahora):
 
 def dibujar_perdon(ventana, ahora):
     t = ahora - escena_perdon["t0"]
-    if t < 2000:                        # destello dorado
+    if t < 2000:                        
         a = int(255 * max(0, 1 - abs(t - 1000) / 1000))
         velo = pygame.Surface((ancho, alto))
         velo.fill((255, 245, 200))
@@ -2255,9 +2225,6 @@ def dar_pocion_cocina(clave):
         dar_pocion_67()
 
 
-# ---------------------------------------------------------------------------
-# JUMPSCARE (modo diablo)
-# ---------------------------------------------------------------------------
 def iniciar_susto():
     global susto
     if susto is None and furia is None:
@@ -2296,9 +2263,6 @@ def dibujar_susto(ventana, ahora):
     dibujar_ojos_brillantes(ventana, centro, img, 1.0)
 
 
-# ---------------------------------------------------------------------------
-# PAU JR (el hijito que Pau cuida)
-# ---------------------------------------------------------------------------
 FRASES_PAU_A_JR = ["¡Cuidado, Jr!", "¡Ese es mi Jr!", "¡No corras tan rápido!",
                    "¡Mi bebé!", "¡Jr, no te alejes!", "¡Volvé temprano, Jr!"]
 FRASES_JR = {"corre": "¡Wiiiii!", "vuela": "¡Mirá papá, vuelo!", "67": "¡SIX SEVEN!"}
@@ -2381,7 +2345,7 @@ def dibujar_gorro_helice(ventana, x, y, ahora, rapido):
 def dibujar_jr_vivo(ventana, ahora):
     x, y = int(jr["x"]), int(jr["y"])
     lado = -jr["dir"]
-    if img_chupetin is not None:        # chupetín enorme, del lado de atrás
+    if img_chupetin is not None:      
         chu = pygame.transform.flip(img_chupetin, lado > 0, False)
         ventana.blit(chu, chu.get_rect(center=(x + lado * 48, y - 18)))
     ventana.blit(jr_feliz, jr_feliz.get_rect(center=(x, y)))
@@ -2420,9 +2384,6 @@ def dibujar_jr_muerto(ventana):
 rect_jr_muerto = pygame.Rect(40, 370, 190, 90)
 
 
-# ---------------------------------------------------------------------------
-# AGARRAR Y REVOLEAR A PAU / ENOJO / IRSE VOLANDO
-# ---------------------------------------------------------------------------
 PISO_POU = 330
 ultimo_golpe = 0
 
@@ -2640,9 +2601,6 @@ def dibujar_enojo(ventana):
     ventana.blit(t, (290, 11))
 
 
-# ---------------------------------------------------------------------------
-# CELULAR (llamar a Pau)
-# ---------------------------------------------------------------------------
 MARCO_CEL = pygame.Rect(250, 22, 300, 556)
 PANTALLA_CEL = pygame.Rect(264, 64, 272, 474)
 boton_llamar = pygame.Rect(PANTALLA_CEL.x + 36, PANTALLA_CEL.bottom - 70, 200, 48)
@@ -2870,7 +2828,7 @@ def dibujar_chat(ventana, ahora, limite_inferior):
 def dibujar_hack(ventana, ahora):
     t = ahora - cel["t0"]
     p = PANTALLA_CEL
-    if t < 1600:                                    # glitch y estática
+    if t < 1600:                                  
         pygame.draw.rect(ventana, (20, 20, 20), p)
         for _ in range(26):
             y = random.randint(p.y, p.bottom - 8)
@@ -2881,7 +2839,7 @@ def dibujar_hack(ventana, ahora):
             g = random.randint(60, 220)
             ventana.fill((g, g, g), (random.randint(p.x, p.right - 3),
                                      random.randint(p.y, p.bottom - 3), 3, 3))
-    elif t < 3600:                                  # terminal
+    elif t < 3600:                                  
         pygame.draw.rect(ventana, (0, 0, 0), p)
         n = min(len(HACK_LINEAS), (t - 1600) // 300 + 1)
         for i, linea in enumerate(HACK_LINEAS[:n]):
@@ -2889,7 +2847,7 @@ def dibujar_hack(ventana, ahora):
                          (p.x + 12, p.y + 30 + i * 26))
         if (t // 250) % 2:
             pygame.draw.rect(ventana, (255, 40, 40), (p.x + 12, p.y + 30 + n * 26, 10, 16))
-    else:                                           # la cara de Pau
+    else:                                         
         pygame.draw.rect(ventana, (110, 0, 0), p)
         cara = _ajustar(pou_maldito, 250)
         c = (p.centerx + random.randint(-6, 6), p.centery - 40 + random.randint(-6, 6))
@@ -2899,7 +2857,7 @@ def dibujar_hack(ventana, ahora):
             for i, txt in enumerate(("TU CELULAR", "ES MÍO")):
                 s = fuente_grande.render(txt, True, (255, 255, 255))
                 ventana.blit(s, s.get_rect(center=(p.centerx, p.bottom - 90 + i * 34)))
-    # la pantalla entera también tiembla en rojo
+   
     if t > 3600 and (t // 90) % 3 == 0:
         VELO_ROJO.set_alpha(70)
         ventana.blit(VELO_ROJO, (0, 0))
@@ -3021,7 +2979,6 @@ MINIJUEGOS = [
     ("Flota flota", "flotaflota"),
     ("Saltar nubes", "saltar_nubes"),
 ]
-# Minijuegos que son programas aparte (se abren en su propia ventana)
 MINIJUEGOS_EXTERNOS = {
     "flappy": "Flappy_Pau.py",
     "comida_cae": "Comida_cae.py",
@@ -3087,7 +3044,7 @@ def lanzar_externo(clave):
         return
     ventana = pygame.display.get_surface()
     reloj = pygame.time.Clock()
-    while proc.poll() is None:              # la ventana del juego sigue respondiendo
+    while proc.poll() is None:              
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 proc.terminate()
@@ -3239,7 +3196,6 @@ def _dibujar_atrapa(ventana, mj):
     ventana.blit(img_cesta, img_cesta.get_rect(midbottom=(int(mj["x"]), 570)))
 
 
-# --- Reflejos ---
 def _nuevo_objetivo(mj):
     mj["objetivo"] = {
         "x": random.randint(70, ancho - 70),
@@ -3383,7 +3339,6 @@ def _dibujar_simon(ventana, mj):
         pygame.draw.rect(ventana, (0, 0, 0), r, 3, border_radius=18)
 
 
-# --- Pong (la pelota es la cara de Pau) ---
 PONG_ARRIBA, PONG_ABAJO = 112, 588
 PONG_CENTRO_Y = (PONG_ARRIBA + PONG_ABAJO) // 2
 PONG_ALTO_PALETA = 92
@@ -3464,7 +3419,6 @@ def _dibujar_pong(ventana, mj):
         ventana.blit(s, s.get_rect(center=(ancho // 2, PONG_CENTRO_Y + 50)))
 
 
-# --- Control general de minijuegos ---
 def actualizar_minijuego(dt):
     mj = minijuego
     if mj is None or mj["fin"]:
@@ -3616,7 +3570,7 @@ def acariciar(posicion):
     if ahora - ultima_caricia < 350:
         return
     ultima_caricia = ahora
-    if maldito:                 # en modo diablo no quiere que lo toques
+    if maldito:               
         subir_enojo(ENOJO_CARICIA_DIABLO)
         crear_particulas("gota", posicion, 2)
         pau_dice(random.choice(["No me toques.", "Sacá la mano.", "¿Qué querés?",
@@ -3795,18 +3749,15 @@ def manejar_click(posicion):
         abrir_regalo()
         return
 
-    # Caca en el piso: tocarla la limpia
     if caca_en_piso and rect_caca_piso.collidepoint(posicion):
         limpiar_caca()
         return
 
-    # Celular: llamar a Pau
     if (rect_celular.collidepoint(posicion) and en_inodoro is None
             and not bloqueado_por_escena()):
         abrir_celular()
         return
 
-    # Pau Jr
     if jr is not None and rect_jr().collidepoint(posicion):
         click_jr()
         return
@@ -3815,7 +3766,6 @@ def manejar_click(posicion):
                                 "Vos tenés la culpa."]), 2200, crudo=True)
         return
 
-    # Mientras Pau duerme (o está en el inodoro) no se puede cambiar de habitación
     if not modo_noche and en_inodoro is None:
         if flecha_izquierda.collidepoint(posicion):
             cambiar_habitacion(-1)
@@ -3888,7 +3838,6 @@ def manejar_click(posicion):
                 if rect.collidepoint(posicion):
                     usar_parcela(i, posicion)
 
-    # Tocar a Pau: si lo arrastrás lo revoleás, si solo hacés click lo acariciás
     if puede_agarrar() and zona_pau_actual().collidepoint(posicion):
         empezar_agarre(posicion)
 
@@ -3947,9 +3896,9 @@ def manejar_escape():
     """ESC dentro del juego. Devuelve True si cerró algo (submenú / minijuego)."""
     global subpantalla, minijuego
     if furia is not None or susto is not None:
-        return True             # durante las escenas no hay pausa
+        return True             
     if subpantalla == "celular" and cel["estado"] == "hack":
-        return True             # no te podés escapar del hackeo
+        return True             
     if subpantalla == "minijuego":
         minijuego = None
         subpantalla = "minijuegos"
@@ -3963,7 +3912,7 @@ def manejar_escape():
 def manejar_tecla(tecla):
     if furia is not None or susto is not None or en_inodoro is not None:
         return
-    if tecla == pygame.K_F9 and maldito:     # para probar el jumpscare
+    if tecla == pygame.K_F9 and maldito:     
         iniciar_susto()
         return
     if subpantalla == "normal" and not modo_noche and agarre is None:
@@ -3984,10 +3933,10 @@ def actualizar_necesidades(dt):
     global ultimo_guardado, ultimo_chequeo_dia
 
     tiempo_actual = pygame.time.get_ticks()
-    if furia is not None:           # el tiempo se congela durante la escena
+    if furia is not None:          
         return
     pausadas = necesidades_pausadas()
-    durmiendo = modo_noche and not maldito      # en modo diablo no duerme
+    durmiendo = modo_noche and not maldito     
 
     if not pausadas:
         acum_descenso += dt * 1000
@@ -4006,7 +3955,7 @@ def actualizar_necesidades(dt):
         if tiempo_actual - ultimo_incremento_dormir >= VEL_DORMIR_MS:
             dormir = min(100, dormir + 1)
             ultimo_incremento_dormir = tiempo_actual
-        # Ya descansó: se despierta solo y vuelve la luz
+        
         if dormir >= 100:
             if lleno_desde == 0:
                 lleno_desde = tiempo_actual
@@ -4016,7 +3965,7 @@ def actualizar_necesidades(dt):
     if en_inodoro is not None and tiempo_actual >= en_inodoro["fin"]:
         terminar_inodoro()
 
-    # Pau ya no se muere: si la barra del inodoro llega a 0, se hace encima.
+    
     if not pausadas and inodoro <= 0 and en_inodoro is None:
         cagarse_encima()
 
@@ -4064,7 +4013,7 @@ def dibujar_pociones_cocina(ventana, ahora):
 
 def dibujar_celular_boton(ventana, ahora):
     r = rect_celular
-    if pau_ausente:                 # titila para que lo uses
+    if pau_ausente:             
         brillo = _crear_resplandor(55, (255, 240, 120, int(140 + 100 * math.sin(ahora / 200))))
         ventana.blit(brillo, brillo.get_rect(center=r.center))
     if img_celular is not None:
@@ -4099,7 +4048,7 @@ def dibujar_pau_en_cuarto(ventana, ahora, centro_pou):
         ventana.blit(img, img.get_rect(center=(int(pos[0]), int(pos[1]))))
         return
     if mirando_en_oscuridad() and habitacion_actual == 2:
-        # Modo diablo: no duerme. Se queda parado mirándote y se va acercando.
+       
         esc = 1 + min(0.5, (ahora - inicio_mirada) / 30000)
         img = _ajustar(pou_maldito, int(TAMAÑO_POU * esc))
         ventana.blit(img, img.get_rect(center=CASA_POU))
@@ -4108,7 +4057,7 @@ def dibujar_pau_en_cuarto(ventana, ahora, centro_pou):
                                 0.75 + 0.25 * math.sin(ahora / 400))
         return
     if modo_noche and habitacion_actual == 2:
-        # Pau acostado en la cama, respirando despacito
+        
         acostado = personaje_acostado()
         resp = int(math.sin(ahora / 700) * 2)
         ventana.blit(acostado, acostado.get_rect(center=(CENTRO_CAMA[0], CENTRO_CAMA[1] + resp)))
@@ -4214,7 +4163,7 @@ def principal():
         fondos = [fondo_bano, fondo_sala, fondo_habitacion, fondo_cocina, fondo_jardin]
         ventana.blit(fondos[habitacion_actual], (0, 0))
 
-        # Mesita de luz con el velador (antes de la capa nocturna)
+        
         if habitacion_actual == 2:
             dibujar_mesita_velador(ventana)
         if habitacion_actual == 0:
@@ -4280,7 +4229,7 @@ def principal():
         elif habitacion_actual == 4:
             dibujar_jardin(ventana, ahora)
 
-        # Pau habla (reacciones) o avisa cuando necesita algo
+        
         dormido = modo_noche and not maldito
         if not pau_ausente and not dormido and furia is None and en_inodoro is None:
             if yendose is not None or llegando is not None:
